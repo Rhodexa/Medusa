@@ -3,6 +3,7 @@
 #include <WebServer.h>
 #include <uri/UriBraces.h>
 #include <ArduinoJson.h>
+#include <Update.h>
 #include "wifi_manager.h"
 #include "node_manager.h"
 #include "config_manager.h"
@@ -242,6 +243,41 @@ void handleSetPresetName() {
 }
 
 // ---------------------------------------------------------------------------
+// OTA update handlers
+// ---------------------------------------------------------------------------
+
+// Shared upload handler — type is U_FLASH for firmware, U_SPIFFS for filesystem.
+static void handleOTAUpload(int updateType) {
+    HTTPUpload& upload = server.upload();
+    if (upload.status == UPLOAD_FILE_START) {
+        Serial.printf("[OTA] Start: %s  type=%d\n", upload.filename.c_str(), updateType);
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN, updateType)) {
+            Update.printError(Serial);
+        }
+    } else if (upload.status == UPLOAD_FILE_WRITE) {
+        if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+            Update.printError(Serial);
+        }
+    } else if (upload.status == UPLOAD_FILE_END) {
+        if (Update.end(true)) {
+            Serial.printf("[OTA] Success: %u bytes\n", upload.totalSize);
+        } else {
+            Update.printError(Serial);
+        }
+    }
+}
+
+static void handleOTADone() {
+    bool ok = !Update.hasError();
+    server.sendHeader("Connection", "close");
+    server.send(ok ? 200 : 500, "text/plain", ok ? "OK" : Update.errorString());
+    if (ok) {
+        delay(300);
+        ESP.restart();
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Setup / Loop
 // ---------------------------------------------------------------------------
 
@@ -277,6 +313,14 @@ void setup() {
     server.on("/api/config",      HTTP_POST, handleConfigUpload);
     server.on("/api/config/name", HTTP_GET,  handleGetPresetName);
     server.on("/api/config/name", HTTP_POST, handleSetPresetName);
+
+    // OTA update
+    server.on("/update/firmware", HTTP_POST,
+        handleOTADone,
+        []() { handleOTAUpload(U_FLASH); });
+    server.on("/update/filesystem", HTTP_POST,
+        handleOTADone,
+        []() { handleOTAUpload(U_SPIFFS); });
 
     // Root — serve index.html (single page app)
     server.on("/", HTTP_GET, []() {

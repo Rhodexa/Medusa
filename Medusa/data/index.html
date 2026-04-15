@@ -582,6 +582,36 @@ input[type=number].num-big::-webkit-inner-spin-button { opacity: 1; cursor: poin
             </div>
             <div class="toast" id="wt1"></div>
         </div>
+
+        <div class="panel">
+            <div class="panel-title">Actualización de firmware</div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+                <div>
+                    <span class="field-label">Firmware (.bin)</span>
+                    <div class="btn-row" style="align-items:center">
+                        <label class="btn btn-ghost" style="cursor:pointer;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            <span id="fwFileName">Elegir archivo…</span>
+                            <input type="file" accept=".bin" style="display:none" id="fwFile"
+                                onchange="document.getElementById('fwFileName').textContent=this.files[0]?.name||'Elegir archivo…'">
+                        </label>
+                        <button class="btn btn-teal" style="flex:0 0 auto;padding:0.38rem 0.9rem" onclick="doOTA('firmware','fwFile')">Subir</button>
+                    </div>
+                </div>
+                <div>
+                    <span class="field-label">Sistema de archivos (.bin)</span>
+                    <div class="btn-row" style="align-items:center">
+                        <label class="btn btn-ghost" style="cursor:pointer;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            <span id="fsFileName">Elegir archivo…</span>
+                            <input type="file" accept=".bin" style="display:none" id="fsFile"
+                                onchange="document.getElementById('fsFileName').textContent=this.files[0]?.name||'Elegir archivo…'">
+                        </label>
+                        <button class="btn btn-teal" style="flex:0 0 auto;padding:0.38rem 0.9rem" onclick="doOTA('filesystem','fsFile')">Subir</button>
+                    </div>
+                </div>
+                <div class="toast" id="otaToast"></div>
+            </div>
+        </div>
+
         </div>
   </div>
 
@@ -645,6 +675,37 @@ async function loadWifi() {
             if (el && slot.ssid) el.value = slot.ssid;
         });
     } catch {}
+}
+
+// ─── OTA update ───────────────────────────────────────────────────────────────
+async function doOTA(type, fileInputId) {
+    const fileEl = document.getElementById(fileInputId);
+    if (!fileEl.files.length) {
+        showOTAToast('Seleccioná un archivo primero.', true);
+        return;
+    }
+    const file = fileEl.files[0];
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    showOTAToast('Subiendo… no cierres esta página.', false, true);
+    try {
+        const res = await fetch('/update/' + type, { method: 'POST', body: formData });
+        if (res.ok) {
+            showOTAToast('¡Listo! El dispositivo se está reiniciando. Reconectá en unos segundos.', false, true);
+        } else {
+            showOTAToast('Error: ' + await res.text(), true);
+        }
+    } catch {
+        // Connection reset is expected when the device reboots immediately after sending the response.
+        showOTAToast('¡Listo! El dispositivo se está reiniciando. Reconectá en unos segundos.', false, true);
+    }
+}
+
+function showOTAToast(msg, isError, persistent = false) {
+    const el = document.getElementById('otaToast');
+    el.textContent = msg;
+    el.className = 'toast show' + (isError ? ' err' : '');
+    if (!persistent) setTimeout(() => { el.className = 'toast'; }, 4500);
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────

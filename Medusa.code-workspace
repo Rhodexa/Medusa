@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "Medusa",
+			"path": "Medusa/Medusa"
+		}
+	],
+    "settings": {}
+}

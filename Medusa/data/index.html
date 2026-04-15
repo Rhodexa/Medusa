@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medusa</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', 'Roboto', 'Segoe UI', Arial, sans-serif;
+    color: white;
+    margin: 0;
+    min-height: 100vh;
+    background-image: repeating-linear-gradient(
+        -45deg, rgb(9,32,34), rgb(9,32,34) 10px, rgb(9,31,34) 10px, rgb(9,31,34) 20px);
+}
+
+.page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+.header {
+    display: flex;
+    flex-direction: column;
+    padding: 0.65rem 0.25rem 0.3rem;
+    gap: 0.45rem;
+}
+.header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    color: rgb(26,200,185);
+}
+.header-btns { display: flex; gap: 0.4rem; }
+.icon-btn {
+    background: rgba(26,148,138,0.15);
+    border: 1px solid rgba(26,148,138,0.35);
+    color: rgba(255,255,255,0.7);
+    border-radius: 4px;
+    padding: 0.35rem 0.65rem;
+    cursor: pointer;
+    font-size: 0.78rem;
+    transition: background 0.12s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.icon-btn:hover { background: rgba(26,148,138,0.3); color: white; }
+.section-lbl {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    text-align: center;
+    padding: 0.15rem 0 0.1rem;
+}
+
+/* ── Settings panel ───────────────────────────────────────────────────── */
+.settings-wrap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+}
+.settings-wrap.open { max-height: 700px; }
+
+.panel {
+    border: 1px solid rgb(26,148,138);
+    background: rgba(26,148,138,0.12);
+    border-radius: 5px;
+    padding: 0.75rem;
+}
+.panel-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+.status-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #555; flex-shrink: 0; transition: background 0.3s; }
+.dot.ok  { background: #16c5a5; box-shadow: 0 0 5px #16c5a5; }
+.dot.err { background: #a83b53; }
+
+.wifi-slot { padding-top: 0.6rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.field-label { font-size: 0.72rem; opacity: 0.55; display: block; margin-bottom: 0.15rem; }
+input[type="text"], input[type="password"], input[type="number"], select {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(26,148,138,0.45);
+    border-radius: 0;
+    color: white;
+    padding: 0.38rem 0.6rem;
+    font-size: 0.88rem;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.12s;
+}
+input:focus, select:focus { border-bottom-color: rgb(26,148,138); }
+input::placeholder { opacity: 0.3; }
+select { background: rgb(9,32,34); }  /* needs bg for dropdown readability */
+select option { background: rgb(9,32,34); }
+
+.btn-row { display: flex; gap: 0.4rem; margin-top: 0.3rem; }
+.btn { flex:1; padding: 0.38rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: opacity 0.12s; }
+.btn:hover { opacity: 0.85; }
+.btn-teal  { background: #15a185; color: white; }
+.btn-ghost { background: #26413c; color: rgba(255,255,255,0.55); flex: 0 0 auto; padding: 0.38rem 0.8rem; }
+.toast { display: none; padding: 0.3rem 0.55rem; border-radius: 3px; font-size: 0.78rem; border-left: 2px solid #16c5a5; background: rgba(0,0,0,0.35); margin-top: 0.25rem; }
+.toast.err { border-left-color: #a83b53; }
+.toast.show { display: block; }
+
+/* ── Node cards ───────────────────────────────────────────────────────── */
+.node-card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #111;
+    box-shadow: 0 5px 5px 0 #0003;
+    background: rgb(7, 52, 49);
+}
+
+/* Node name header */
+.node-head {
+    padding: 0.75rem 0.85rem 0.6rem;
+    background: rgba(26,148,138,0.22);
+}
+.node-name {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: white;
+    font-size: 1.65rem;
+    font-weight: bold;
+    padding: 0;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.12s;
+}
+.node-name:focus { border-bottom-color: rgb(26,148,138); }
+
+/* Telemetry bar — big values, space-around */
+.telem-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.9rem 0.5rem 0.75rem;
+    background: rgba(26,148,138,0.12);
+}
+.telem-cell { text-align: center; }
+.telem-val {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+.telem-val.na { opacity: 0.2; font-size: 1.6rem; }
+.telem-lbl {
+    font-size: 0.65rem;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+    opacity: 0.75;
+}
+
+/* Outputs container */
+.outputs {
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(0,0,0,0.18);
+}
+
+/* ── Output rows ──────────────────────────────────────────────────────── */
+.output-row {
+    background: rgba(0, 93, 115, 0.17);
+    border-radius: 5px;
+    border: 1px solid #00000078;
+}
+.output-main {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 0.65rem;
+    gap: 0.55rem;
+    cursor: pointer;
+    transition: background 0.1s;
+    user-select: none;
+}
+.output-main:hover { background: rgba(255,255,255,0.04); }
+
+/* Chevron expand indicator — points right when closed, down when open */
+.chev {
+    width: 33px; height: 33px;
+    fill: rgba(255,255,255,0.75);
+    flex-shrink: 0;
+    transform: rotate(-90deg);
+    transition: transform 0.2s ease, fill 0.15s;
+    pointer-events: none;
+}
+.chev.open { transform: rotate(0deg); fill: rgb(26,200,185); }
+
+.out-name {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.9rem;
+    padding: 0.1rem 0;
+    outline: none;
+    cursor: pointer;
+    min-width: 0;
+    transition: border-color 0.12s;
+}
+.out-name:focus { border-bottom-color: rgb(26,148,138); cursor: text; }
+
+/* Auto / Manual seg */
+.seg-ctrl {
+    display: flex;
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+    gap: 1px;
+    background: rgba(0,0,0,0.35);
+}
+.seg {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 0.04em;
+    opacity: 0.35;
+    cursor: pointer;
+    background: #1c2e2b;
+    transition: all 0.12s;
+}
+.seg.on { opacity: 1; }
+.seg.auto.on   { background: rgba(26,148,138,0.6); }
+.seg.manual.on { background: rgba(170,90,0,0.7); }
+
+/* ON / OFF rack */
+.rack {
+    display: flex;
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+    gap: 1px;
+    background: rgba(0,0,0,0.35);
+}
+.rack-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+    font-weight: bold;
+    opacity: 0.35;
+    cursor: pointer;
+    background: #1c2e2b;
+    transition: all 0.12s;
+}
+.rack-btn.on { opacity: 1; }
+.rack-btn.rb-on.on  { background: #15a185; }
+.rack-btn.rb-off.on { background: #a83b53; }
+
+/* Lamp */
+.lamp { width: 22px; height: 26px; flex-shrink: 0; opacity: 0.18; transition: opacity 0.15s; }
+.lamp.lit { opacity: 1; }
+
+/* Timer — large number inputs */
+.timer-num {
+    font-size: 1rem;
+    font-weight: 700;
+    width: 3.8ch;
+    text-align: center;
+    padding: 0.2rem 0.3rem;
+    letter-spacing: -0.02em;
+}
+
+/* ── Rule button (pencil + label, replaces chevron) ──────────────────── */
+.rule-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0.25rem 0.4rem;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.35;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.rule-btn.active { opacity: 1; background: rgba(26,148,138,0.25); }
+.rule-ico { width: 18px; height: 18px; fill: white; pointer-events: none; }
+.rule-lbl { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.06em; color: white; font-weight: 700; pointer-events: none; }
+
+/* ── Rule editor (expandable drawer) ─────────────────────────────────── */
+.rule-drawer { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; background: rgba(0,0,0,0.22); }
+.rule-drawer.open { max-height: 700px; }
+.rule-inner { padding: 0.85rem 0.85rem 0.75rem; display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* Rule type — pill/tab row */
+.type-row {
+    display: flex;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(26,148,138,0.2);
+}
+.type-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.78rem;
+    font-weight: bold;
+    color: rgba(255,255,255,0.35);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: all 0.15s;
+}
+.type-btn.on { background: rgba(26,148,138,0.45); color: white; }
+.type-btn-man.on {background: rgba(170,90,0,0.7) !important; color: white;}
+
+/* Shared unit label */
+.unit { font-size: 0.85rem; opacity: 0.8; flex-shrink: 0; }
+
+/* ── Timer editor ─────────────────────────────────────────────────────── */
+.timer-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.timer-lbl {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.8;
+}
+.timer-pair { display: flex; align-items: center; gap: 1rem; }
+
+/* Big number spinner — overrides global input style */
+input[type=number].num-big {
+    -webkit-appearance: auto !important;
+    appearance: auto !important;
+    background: rgba(0,0,0,0.35) !important;
+    border: 0px solid rgba(26,148,138,0.5) !important;
+    border-radius: 6px !important;
+    font-size: 1rem !important;
+    font-weight: 700;
+    text-align: center;
+    width: 4.4ch;
+    padding: 0.2rem 0.1rem;
+    color: white;
+    letter-spacing: -0.02em;
+}
+input[type=number].num-big::-webkit-inner-spin-button { opacity: 1; cursor: pointer; }
+
+/* ── Sensor/threshold editor ──────────────────────────────────────────── */
+.thresh-inner { display: flex; flex-direction: column; gap: 0.55rem; }
+.thresh-grid {
+    display: grid;
+    grid-template-columns: auto auto auto 1.8rem 1fr;
+    gap: 0.4rem 0.6rem;
+    align-items: center;
+    width: 100%;
+}
+.tg-hdr { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.38; text-align: center; }
+.thresh-sensor-sel {
+    background: rgba(1,90,71,0.333); border: 1px solid rgba(30,175,156,0.61);
+    border-radius: 5px; font-weight: 700; font-size: 0.85rem;
+    color: inherit; cursor: pointer; padding: 0.45rem 0.5rem; width: 100%;
+}
+.tg-cond { display: flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; flex-direction: column; color: white; }
+.thresh-cond-lbl { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.55; }
+.thresh-chevron { opacity: 0.45; display: flex; align-items: center; flex-shrink: 0; }
+.thresh-arrow { opacity: 0.65; display: flex; align-items: center; justify-content: center; }
+.thresh-badge {
+    border-radius: 6px; font-weight: bold; font-size: 0.88rem;
+    letter-spacing: 0.06em; padding: 0.5rem 0.6rem; cursor: pointer;
+    transition: opacity 0.12s; display: flex; justify-content: center; align-items: center; width: 100%;
+}
+.thresh-badge:hover { opacity: 0.75; }
+.thresh-badge.on  { background: rgba(26,148,138,0.22); color: white; border: 1px solid rgb(30,175,102); }
+.thresh-badge.off { background: rgba(201,13,60,0.479);  color: white; border: 1px solid rgb(236,58,97); }
+.thresh-swap-btn {
+    grid-column: 5;
+    background: rgba(255,255,255,0.08); border: none;
+    border-radius: 8px; color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.9rem 1rem; transition: background 0.12s; width: 100%;
+}
+.thresh-swap-btn:hover { background: rgba(255,255,255,0.18); }
+.num-picker {
+    display: flex; flex-direction: column; align-items: center;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(26,148,138,0.4);
+    border-radius: 8px; overflow: hidden; user-select: none; width: 100%;
+}
+.np-btn {
+    background: none; border: none; color: white; cursor: pointer;
+    width: 100%; padding: 0.3rem 0.5rem;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.4; transition: opacity 0.1s, background 0.1s;
+}
+.np-btn:hover  { opacity: 1; background: rgba(26,148,138,0.18); }
+.np-btn:active { background: rgba(26,148,138,0.35); }
+.np-display {
+    display: flex; align-items: baseline; justify-content: center;
+    gap: 0.2rem; padding: 0.25rem 0.6rem;
+    border-top: 1px solid rgba(26,148,138,0.2);
+    border-bottom: 1px solid rgba(26,148,138,0.2);
+    width: 100%;
+}
+.np-num  { font-size: 1.4rem; font-weight: 700; line-height: 1; }
+.np-unit { font-size: 0.85rem; font-weight: 600; opacity: 0.65; }
+
+/* ── Save button ──────────────────────────────────────────────────────── */
+.save-rule {
+    align-self: stretch;
+    background: #15a185;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    padding: 0.6rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: opacity 0.12s;
+}
+.save-rule:hover { opacity: 0.85; }
+
+/* ── Preset banner ────────────────────────────────────────────────────── */
+.preset-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.8rem;
+    background: rgba(26,148,138,0.13);
+    border: 1px solid rgba(26,148,138,0.45);
+    border-radius: 5px;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+}
+.preset-banner > span { flex: 1; min-width: 12ch; }
+.preset-banner .btn { flex: 0 0 auto; }
+
+/* ── Spinner ──────────────────────────────────────────────────────────── */
+.spinner-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+    padding: 3.5rem 1rem;
+}
+.spinner-ring {
+    width: 72px;
+    height: 72px;
+    border: 5px solid rgba(26,148,138,0.18);
+    border-top-color: rgb(26,200,185);
+    border-radius: 50%;
+    animation: spin 2.5s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner-text {
+    color: rgb(26,200,185);
+    font-size: 0.88rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+
+/* ── Empty state ──────────────────────────────────────────────────────── */
+.empty { text-align: center; opacity: 0.9; padding: 3rem 1rem; font-size: 2rem; letter-spacing: 0.05em; }
+.footer { text-align: left; font-size: 1rem; opacity: 0.4; padding: 0.75rem 0 1rem; }
+</style>
+</head>
+<body>
+
+<!-- SVG symbol library -->
+<svg style="display:none">
+  <!-- Lamp on (with rays) -->
+  <symbol id="ico-on" viewBox="0 0 512 512"><g fill="#fff" transform="translate(42,21)">
+    <path d="M213,85C284,85 341,143 341,213C341,261 316,302 277,324L277,405L256,427L235,427C235,438 225,448 213,448C202,448 192,438 192,427L171,427L149,405L149,324C111,302 85,261 85,213C85,143 143,85 213,85ZM235,340C228,341 221,341 213,341C206,341 199,341 192,340L192,384L235,384L235,340ZM213,128C166,128 128,166 128,213C128,260 166,299 213,299C261,299 299,261 299,213C299,166 261,128 213,128ZM229,0L229,64L197,64L197,0L229,0ZM96,308L119,330L74,375L51,353L96,308ZM330,308L375,353L353,375L308,330L330,308ZM427,197L427,229L363,229L363,197L427,197ZM64,197L64,229L0,229L0,197L64,197ZM353,51L375,74L330,119L308,96L353,51ZM74,51L119,96L96,119L51,74L74,51Z"/>
+  </g></symbol>
+  <!-- Lamp off (bulb only) -->
+  <symbol id="ico-off" viewBox="0 0 512 512"><g fill="#fff" transform="translate(42,21)">
+    <path d="M213,85C284,85 341,143 341,213C341,261 316,302 277,324L277,405L256,427L235,427C235,438 225,448 213,448C202,448 192,438 192,427L171,427L149,405L149,324C111,302 85,261 85,213C85,143 143,85 213,85ZM235,340C228,341 221,341 213,341C206,341 199,341 192,340L192,384L235,384L235,340ZM213,128C166,128 128,166 128,213C128,260 166,299 213,299C261,299 299,261 299,213C299,166 261,128 213,128Z"/>
+  </g></symbol>
+  <!-- Pencil / edit -->
+  <symbol id="ico-edit" viewBox="0 0 24 24">
+    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+  </symbol>
+  <!-- Chevron down -->
+  <symbol id="ico-chev" viewBox="0 0 24 24">
+    <path d="M7 10l5 5 5-5z"/>
+  </symbol>
+  <!-- Download -->
+  <symbol id="ico-dl" viewBox="0 0 24 24">
+    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+  </symbol>
+  <!-- Upload -->
+  <symbol id="ico-ul" viewBox="0 0 24 24">
+    <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+  </symbol>
+  <!-- Settings gear -->
+  <symbol id="ico-gear" viewBox="0 0 24 24">
+    <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.04 7.04 0 00-1.62-.94l-.36-2.54A.484.484 0 0014 3h-4c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 00-.59.22L2.74 9.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h4c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+  </symbol>
+</svg>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Medusa</h1>
+    <div class="header-btns">
+      <button class="icon-btn" onclick="downloadCfg()">
+        <svg width="15" height="15" fill="currentColor"><use href="#ico-dl"/></svg>
+        Descargar presets
+      </button>
+      <label class="icon-btn" style="cursor:pointer">
+        <svg width="15" height="15" fill="currentColor"><use href="#ico-ul"/></svg>
+        Subir presets
+        <input type="file" accept=".json" style="display:none" onchange="uploadCfg(this)">
+      </label>
+      <button class="icon-btn" id="settingsBtn" onclick="toggleSettings()">
+        <svg width="15" height="15" fill="currentColor"><use href="#ico-gear"/></svg>
+        Configuración y Wi-Fi
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings panel -->
+  <div class="settings-wrap" id="settingsWrap">
+    <div class="panel" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <div class="panel">
+            <div class="panel-title">Preset</div>
+            <span class="field-label">Nombre</span>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+                <input type="text" id="presetNameInput" placeholder="Sin nombre" autocomplete="off" style="flex:1">
+                <button class="btn btn-teal" id="presetSaveBtn" onclick="savePresetName()" style="flex-shrink:0;white-space:nowrap">Guardar</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Red Wi-Fi</div>
+            <div class="status-row">
+                <div class="dot" id="staDot"></div>
+                <span id="staLabel" style="font-size:0.88rem">Cargando...</span>
+            </div>
+            <div style="opacity:0.4; font-size:0.78rem; margin-top:0.3rem">
+                AP: <span id="apSSID">—</span>
+            </div>
+        </div>
+
+        <div class="wifi-slot panel">
+            <span class="panel-title" style="margin:0 0 0.25rem">Red principal</span>
+            <span class="field-label">SSID</span>
+            <input type="text"     id="ssid0" placeholder="Nombre de tu Wi-Fi" autocomplete="off">
+            <span class="field-label">Contraseña</span>
+            <input type="password" id="pass0" placeholder="Vacío si es abierta" autocomplete="off">
+            <div class="btn-row">
+            <button class="btn btn-teal"  onclick="saveWifi(0)">Guardar y conectar</button>
+            <button class="btn btn-ghost" onclick="clearWifi(0)">Borrar</button>
+            </div>
+            <div class="toast" id="wt0"></div>
+        </div>
+
+        <div class="wifi-slot panel">
+            <span class="panel-title" style="margin:0 0 0.25rem">Red alternativa</span>
+            <span class="field-label">SSID</span>
+            <input type="text"     id="ssid1" placeholder="Alternativa opcional" autocomplete="off">
+            <span class="field-label">Contraseña</span>
+            <input type="password" id="pass1" placeholder="Vacío si es abierta" autocomplete="off">
+            <div class="btn-row">
+            <button class="btn btn-teal"  onclick="saveWifi(1)">Guardar</button>
+            <button class="btn btn-ghost" onclick="clearWifi(1)">Borrar</button>
+            </div>
+            <div class="toast" id="wt1"></div>
+        </div>
+        </div>
+  </div>
+
+  <!-- Fresh-config banner (hidden until checked) -->
+  <div class="preset-banner" id="presetBanner" style="display:none">
+    <span>Sin configuración guardada. ¿Querés restaurar tus presets?</span>
+    <label class="btn btn-teal" style="cursor:pointer;font-size:0.8rem;padding:0.38rem 0.7rem">
+      Subir presets
+      <input type="file" accept=".json" style="display:none" onchange="uploadCfg(this);dismissBanner()">
+    </label>
+    <button class="btn btn-ghost" style="font-size:0.8rem" onclick="dismissBanner()">Ignorar</button>
+  </div>
+
+  <!-- Node cards (populated by JS) -->
+  <div id="spinner" class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-text">Buscando medusas...</div>
+  </div>
+  <div id="nodeList"></div>
+
+<div class="footer">
+Made with Love, <br>
+by <b>Rhodune!</b>,
+for you ❤️
+</div>
+</div>
+
+<script>
+// ─── Constants ────────────────────────────────────────────────────────────────
+const R_NONE = 0, R_TIMER = 1, R_THRESH = 2;
+
+// ─── State ────────────────────────────────────────────────────────────────────
+const configs     = {};        // mac → config object (fetched once per node)
+const nodeCache   = {};        // mac → last live node object from /api/nodes
+const openEditors = new Set(); // "mac-i" keys whose rule drawer is open
+
+// ─── Polling ──────────────────────────────────────────────────────────────────
+async function refresh() {
+    try {
+        const d = await fetch('/api/nodes').then(r => r.json());
+        renderNodes(d.nodes || []);
+    } catch {}
+}
+
+async function loadWifi() {
+    try {
+        const s = await fetch('/api/wifi/status').then(r => r.json());
+        document.getElementById('apSSID').textContent = s.ap_ssid || '—';
+        const dot = document.getElementById('staDot');
+        const lbl = document.getElementById('staLabel');
+        if (s.connected) {
+            dot.className = 'dot ok';
+            lbl.textContent = `Conectado — ${s.ssid}  (${s.ip})`;
+        } else {
+            dot.className = 'dot err';
+            lbl.textContent = 'Sin conexión a red local';
+            openSettings();
+        }
+        (s.slots || []).forEach((slot, i) => {
+            const el = document.getElementById('ssid' + i);
+            if (el && slot.ssid) el.value = slot.ssid;
+        });
+    } catch {}
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function renderNodes(nodes) {
+    const list    = document.getElementById('nodeList');
+    const spinner = document.getElementById('spinner');
+    if (spinner) spinner.style.display = nodes.length ? 'none' : 'flex';
+
+    const macs = new Set(nodes.map(n => n.mac));
+    [...list.querySelectorAll('.node-card')].forEach(el => {
+        if (!macs.has(el.dataset.mac)) el.remove();
+    });
+
+    nodes.forEach(node => {
+        nodeCache[node.mac] = node;
+        let card = list.querySelector(`.node-card[data-mac="${node.mac}"]`);
+        if (!card) {
+            card = mkCard(node);
+            list.appendChild(card);
+            fetchConfig(node.mac);  // load config once; never re-fetched by poll
+        }
+        // Only touch the two live regions — card structure is never rebuilt
+        updTelem(node.mac, node);
+        updOutputs(node.mac, node);
+    });
+}
+
+// Build the card skeleton once. Telem values have stable IDs; outputs container
+// is empty and will be populated by the first updOutputs() call.
+function mkCard(node) {
+    const div = document.createElement('div');
+    div.className = 'node-card';
+    div.dataset.mac = node.mac;
+    div.innerHTML = `
+        <div class="node-head">
+            <input class="node-name" type="text" value="${x(node.label)}"
+                onchange="saveLabel('${node.mac}',this.value)"
+                onclick="event.stopPropagation()">
+        </div>
+        <div class="telem-bar">
+            <div class="telem-cell">
+                <div class="telem-val na" id="tv-${node.mac}">—</div>
+                <div class="telem-lbl">Temperatura</div>
+            </div>
+            <div class="telem-cell">
+                <div class="telem-val na" id="hv-${node.mac}">—</div>
+                <div class="telem-lbl">Humedad</div>
+            </div>
+        </div>
+        <div class="outputs" id="outs-${node.mac}"></div>`;
+    return div;
+}
+
+// Update only the two telem value spans — nothing else in the card is touched.
+function updTelem(mac, node) {
+    const t = node.temperature, h = node.humidity;
+    const tOk = t != null && !isNaN(+t);
+    const hOk = h != null && !isNaN(+h);
+    const tv = document.getElementById(`tv-${mac}`);
+    const hv = document.getElementById(`hv-${mac}`);
+    if (tv) { tv.className = `telem-val${tOk?'':' na'}`; tv.textContent = tOk ? `${(+t).toFixed(1)}°C` : '—'; }
+    if (hv) { hv.className = `telem-val${hOk?'':' na'}`; hv.textContent = hOk ? `${(+h).toFixed(0)}%`  : '—'; }
+}
+
+// First call → builds each output row via mkOutputRow (stable IDs).
+// Every subsequent call → patchLive (touches only lamp/rack/seg, never inputs).
+// Drawers are NEVER touched here — they are owned by toggleDrawer/applyConfigToUI.
+function updOutputs(mac, node) {
+    const wrap = document.getElementById(`outs-${mac}`);
+    if (!wrap) return;
+    const cfg = configs[mac];
+
+    for (let i = 0; i < 6; i++) {
+        const state  = (node.outputs >> i) & 1;
+        const out    = cfg?.outputs?.[i];
+        const manual = out?.manual_mode || false;
+        const isOpen = openEditors.has(`${mac}-${i}`);
+
+        let row = wrap.querySelector(`.output-row[data-i="${i}"]`);
+        if (!row) {
+            row = mkOutputRow(mac, i, out, state, manual, isOpen);
+            wrap.appendChild(row);
+            // Attach an empty drawer; applyConfigToUI will populate it
+            const drawer = document.createElement('div');
+            drawer.id        = `dr-${mac}-${i}`;
+            drawer.className = 'rule-drawer';
+            row.appendChild(drawer);
+        } else {
+            patchLive(mac, i, state, manual, isOpen);
+        }
+    }
+}
+
+// Build a full output row with stable IDs for every live element.
+// Called exactly once per output per node.
+function mkOutputRow(mac, i, out, state, manual, isOpen) {
+    const row    = document.createElement('div');
+    row.className = 'output-row';
+    row.dataset.i = i;
+    const label  = out?.label || `Salida ${i}`;
+    const onAct  = manual ? `setMState('${mac}',${i},1)` : `force('${mac}',${i},1)`;
+    const offAct = manual ? `setMState('${mac}',${i},0)` : `force('${mac}',${i},0)`;
+    const main   = document.createElement('div');
+    main.className = 'output-main';
+    main.onclick   = () => toggleDrawer(mac, i);
+    main.innerHTML = `
+    <input id="oname-${mac}-${i}" class="out-name" type="text" value="${x(label)}"
+        onchange="saveOutLabel('${mac}',${i},this.value)"
+        onclick="event.stopPropagation()" onfocus="event.stopPropagation()">
+        <div class="seg-ctrl" onclick="event.stopPropagation()">
+            <div id="seg-a-${mac}-${i}" class="seg auto${!manual?' on':''}"
+                onclick="setMode('${mac}',${i},false)">AUTO</div>
+            <div id="seg-m-${mac}-${i}" class="seg manual${manual?' on':''}"
+                onclick="setMode('${mac}',${i},true,${state})">MAN</div>
+        </div>
+        <div class="rack" onclick="event.stopPropagation()">
+            <div id="rboff-${mac}-${i}" class="rack-btn rb-off${state===0?' on':''}" onclick="${offAct}">OFF</div>
+            <div id="rbon-${mac}-${i}"  class="rack-btn rb-on ${state===1?' on':''}" onclick="${onAct}">ON</div>
+        </div>
+        <svg id="lamp-${mac}-${i}" class="lamp${state?' lit':''}" viewBox="0 0 512 512">
+            <use href="${state?'#ico-on':'#ico-off'}"/>
+        </svg>
+        <div id="rbtn-${mac}-${i}" class="rule-btn${isOpen?' active':''}">
+            <svg class="rule-ico" viewBox="0 0 24 24"><use href="#ico-edit"/></svg>
+            <span class="rule-lbl">Reglas</span>
+        </div>
+    `;
+    row.appendChild(main);
+    return row;
+}
+
+// Update only the live elements inside an existing output row.
+// Never touches the label input, never touches the drawer.
+function patchLive(mac, i, state, manual, isOpen) {
+    const onAct  = manual ? `setMState('${mac}',${i},1)` : `force('${mac}',${i},1)`;
+    const offAct = manual ? `setMState('${mac}',${i},0)` : `force('${mac}',${i},0)`;
+    const rbOff = document.getElementById(`rboff-${mac}-${i}`);
+    const rbOn  = document.getElementById(`rbon-${mac}-${i}`);
+    const lamp  = document.getElementById(`lamp-${mac}-${i}`);
+    const segA  = document.getElementById(`seg-a-${mac}-${i}`);
+    const segM  = document.getElementById(`seg-m-${mac}-${i}`);
+    const rbtn  = document.getElementById(`rbtn-${mac}-${i}`);
+    if (rbOff) { rbOff.className = `rack-btn rb-off${state===0?' on':''}`; rbOff.setAttribute('onclick', offAct); }
+    if (rbOn)  { rbOn.className  = `rack-btn rb-on ${state===1?' on':''}`; rbOn.setAttribute('onclick',  onAct);  }
+    if (lamp)  { lamp.className  = `lamp${state?' lit':''}`; lamp.querySelector('use')?.setAttribute('href', state?'#ico-on':'#ico-off'); }
+    if (segA)  segA.className = `seg auto${!manual?' on':''}`;
+    if (segM)  { segM.className = `seg manual${manual?' on':''}`; segM.setAttribute('onclick', `setMode('${mac}',${i},true,${state})`); }
+    if (rbtn)  rbtn.className = `rule-btn${isOpen?' active':''}`;
+}
+
+// Called after config is fetched or saved. Populates label inputs and
+// re-renders any closed drawers with the latest config data.
+function applyConfigToUI(mac) {
+    const cfg = configs[mac];
+    if (!cfg) return;
+    const nameEl = document.querySelector(`.node-card[data-mac="${mac}"] .node-name`);
+    if (nameEl && cfg.label) nameEl.value = cfg.label;
+    cfg.outputs?.forEach((out, i) => {
+        const el = document.getElementById(`oname-${mac}-${i}`);
+        if (el) el.value = out.label || `Salida ${i}`;
+        if (!openEditors.has(`${mac}-${i}`)) {
+            const drawer = document.getElementById(`dr-${mac}-${i}`);
+            if (drawer) drawer.innerHTML = mkDrawer(mac, i, out);
+        }
+    });
+}
+
+function mkDrawer(mac, i, out) {
+    if (!out) return '<div class="rule-inner"><span style="opacity:.35;font-size:.8rem">Cargando...</span></div>';
+    const t = out.rule_type ?? R_NONE;
+    return `<div class="rule-inner">
+        Regla:
+        <div class="type-row">
+            <div class="type-btn type-btn-man ${t===R_NONE  ?'on':''}" onclick="setRT('${mac}',${i},${R_NONE})">Manual</div>
+            <div class="type-btn ${t===R_TIMER ?'on':''}" onclick="setRT('${mac}',${i},${R_TIMER})">Temporizador</div>
+            <div class="type-btn ${t===R_THRESH?'on':''}" onclick="setRT('${mac}',${i},${R_THRESH})">Sensor</div>
+        </div>
+        ${t===R_TIMER  ? mkTimerFields(mac,i,out) : ''}
+        ${t===R_THRESH ? mkThreshFields(mac,i,out) : ''}
+        ${t!==R_NONE ? `<button class="save-rule" id="sbtn-${mac}-${i}" onclick="saveRule('${mac}',${i})">Guardar</button>` : ''}
+    </div>`;
+}
+
+function mkTimerFields(mac, i, out) {
+    const onH  = Math.floor((out.on_ms  || 0) / 3600000);
+    const onM  = Math.floor(((out.on_ms  || 0) % 3600000) / 60000);
+    const offH = Math.floor((out.off_ms || 0) / 3600000);
+    const offM = Math.floor(((out.off_ms || 0) % 3600000) / 60000);
+
+    const pick = (id, val, unit, maxVal) => {
+        const max  = maxVal != null ? `,null,${maxVal}` : '';
+        const maxU = maxVal != null ? `,null,${maxVal}` : '';
+        return `<div class="num-picker">
+            <button class="np-btn"
+                onmousedown="npStart('${id}-d','${id}',1,1,0${max})"
+                onmouseup="npStop()" onmouseleave="npStop()"
+                ontouchstart="npStart('${id}-d','${id}',1,1,0${maxU})" ontouchend="npStop()">
+                <svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 8L8 1L15 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="np-display">
+                <span class="np-num" id="${id}-d">${val}</span>
+                <span class="np-unit">${unit}</span>
+            </div>
+            <input type="hidden" id="${id}" value="${val}">
+            <button class="np-btn"
+                onmousedown="npStart('${id}-d','${id}',-1,1,0${max})"
+                onmouseup="npStop()" onmouseleave="npStop()"
+                ontouchstart="npStart('${id}-d','${id}',-1,1,0${maxU})" ontouchend="npStop()">
+                <svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>`;
+    };
+
+    return `
+        <div class="timer-row">
+            <span class="timer-lbl">Encender por</span>
+            <div class="timer-pair">${pick(`onh-${mac}-${i}`, onH, 'h',   null)}</div>
+            <div class="timer-pair">${pick(`onm-${mac}-${i}`, onM, 'min', 59)}</div>
+        </div>
+        <div class="timer-row">
+            <span class="timer-lbl">Apagar por</span>
+            <div class="timer-pair">${pick(`offh-${mac}-${i}`, offH, 'h',   null)}</div>
+            <div class="timer-pair">${pick(`offm-${mac}-${i}`, offM, 'min', 59)}</div>
+        </div>`;
+}
+
+function mkThreshFields(mac, i, out) {
+    const hum  = out.use_humidity ?? false;
+    const inv  = out.invert ?? false;
+    const unit = hum ? '%' : '°C';
+    const sen  = hum ? 'hum' : 'temp';
+    const val0 = out.lower_val ?? 20;
+    const val1 = out.upper_val ?? 30;
+    const cls0 = inv ? 'off' : 'on';
+    const cls1 = inv ? 'on'  : 'off';
+    const lbl0 = inv ? 'APAGAR'   : 'ENCENDER';
+    const lbl1 = inv ? 'ENCENDER' : 'APAGAR';
+
+    const senSel = (r) => `<select class="thresh-sensor-sel" id="tsen${r}-${mac}-${i}"
+        onchange="syncThreshSensor('${mac}',${i},${r})">
+        <option value="temp" ${sen==='temp'?'selected':''}>Temperatura</option>
+        <option value="hum"  ${sen==='hum' ?'selected':''}>Humedad</option>
+    </select>`;
+
+    const picker = (r, val) => `<div class="num-picker">
+        <button class="np-btn"
+            onmousedown="npStart('tdisp${r}-${mac}-${i}','tval${r}-${mac}-${i}',1)"
+            onmouseup="npStop()" onmouseleave="npStop()"
+            ontouchstart="npStart('tdisp${r}-${mac}-${i}','tval${r}-${mac}-${i}',1)" ontouchend="npStop()">
+            <svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 8L8 1L15 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="np-display">
+            <span class="np-num" id="tdisp${r}-${mac}-${i}">${val}</span>
+            <span class="np-unit" id="tunit${r}-${mac}-${i}">${unit}</span>
+        </div>
+        <input type="hidden" id="tval${r}-${mac}-${i}" value="${val}">
+        <button class="np-btn"
+            onmousedown="npStart('tdisp${r}-${mac}-${i}','tval${r}-${mac}-${i}',-1)"
+            onmouseup="npStop()" onmouseleave="npStop()"
+            ontouchstart="npStart('tdisp${r}-${mac}-${i}','tval${r}-${mac}-${i}',-1)" ontouchend="npStop()">
+            <svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+    </div>`;
+
+    const arrow = `<svg width="18" height="10" viewBox="0 0 18 10" fill="none">
+        <path d="M1 5H16M16 5L11 1M16 5L11 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+
+    return `<div class="thresh-inner"><div class="thresh-grid">
+        <div class="tg-hdr">Sensor</div>
+        <div class="tg-hdr">Condición</div>
+        <div class="tg-hdr">Valor</div>
+        <div></div>
+        <div class="tg-hdr">Salida</div>
+
+        <div>${senSel(0)}</div>
+        <div class="tg-cond">
+            <svg class="thresh-chevron" width="32" height="32" viewBox="0 0 10 12" fill="none"><path d="M8 1L2 6L8 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="thresh-cond-lbl">menor que</span>
+        </div>
+        ${picker(0, val0)}
+        <div class="thresh-arrow">${arrow}</div>
+        <button class="thresh-badge ${cls0}" id="tbadge0-${mac}-${i}" onclick="swapThreshActions('${mac}',${i})">${lbl0}</button>
+
+        <div></div><div></div><div></div><div></div>
+        <button class="thresh-swap-btn" onclick="swapThreshActions('${mac}',${i})">
+            <svg width="36" height="36" viewBox="0 0 24 20" fill="none">
+                <path d="M6 2v14M6 16l-3-4M6 16l3-4M18 16V2M18 2l-3 4M18 2l3 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+
+        <div>${senSel(1)}</div>
+        <div class="tg-cond">
+            <svg class="thresh-chevron" width="32" height="32" viewBox="0 0 10 12" fill="none"><path d="M2 1L8 6L2 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="thresh-cond-lbl">mayor que</span>
+        </div>
+        ${picker(1, val1)}
+        <div class="thresh-arrow">${arrow}</div>
+        <button class="thresh-badge ${cls1}" id="tbadge1-${mac}-${i}" onclick="swapThreshActions('${mac}',${i})">${lbl1}</button>
+    </div></div>`;
+}
+
+function syncThreshSensor(mac, i, src) {
+    const val  = document.getElementById(`tsen${src}-${mac}-${i}`)?.value;
+    const other = src === 0 ? 1 : 0;
+    const otherSel = document.getElementById(`tsen${other}-${mac}-${i}`);
+    if (otherSel) otherSel.value = val;
+    const unit = val === 'hum' ? '%' : '°C';
+    [0, 1].forEach(r => {
+        const el = document.getElementById(`tunit${r}-${mac}-${i}`);
+        if (el) el.textContent = unit;
+    });
+}
+
+function swapThreshActions(mac, i) {
+    const b0 = document.getElementById(`tbadge0-${mac}-${i}`);
+    const b1 = document.getElementById(`tbadge1-${mac}-${i}`);
+    if (!b0 || !b1) return;
+    const wasOn = b0.classList.contains('on');
+    b0.className = `thresh-badge ${wasOn ? 'off' : 'on'}`;
+    b0.textContent = wasOn ? 'APAGAR' : 'ENCENDER';
+    b1.className = `thresh-badge ${wasOn ? 'on' : 'off'}`;
+    b1.textContent = wasOn ? 'ENCENDER' : 'APAGAR';
+}
+
+// Number picker — long-press for continuous step, optional clamping
+const NP_DELAY = 380, NP_RATE = 100;
+let _npTimer = null;
+function npTick(dispId, hidId, dir, step, min, max) {
+    const hid  = document.getElementById(hidId);
+    const disp = document.getElementById(dispId);
+    if (!hid || !disp) return;
+    let v = Math.round((parseFloat(hid.value) + dir * (step ?? 1)) * 10) / 10;
+    if (min != null && v < min) v = min;
+    if (max != null && v > max) v = max;
+    hid.value = v;
+    disp.textContent = v % 1 === 0 ? v.toFixed(0) : v.toFixed(1);
+}
+function npStart(dispId, hidId, dir, step, min, max) {
+    npTick(dispId, hidId, dir, step, min, max);
+    _npTimer = setTimeout(() => { _npTimer = setInterval(() => npTick(dispId, hidId, dir, step, min, max), NP_RATE); }, NP_DELAY);
+}
+function npStop() { clearTimeout(_npTimer); clearInterval(_npTimer); _npTimer = null; }
+
+// ─── Actions ──────────────────────────────────────────────────────────────────
+
+// Open drawer: render fresh from current config so values are always up to date.
+// Close drawer: just hide it — content is preserved so re-open is instant.
+function toggleDrawer(mac, i) {
+    const key    = `${mac}-${i}`;
+    const drawer = document.getElementById(`dr-${mac}-${i}`);
+    const rbtn   = document.getElementById(`rbtn-${mac}-${i}`);
+    if (!drawer) return;
+    if (openEditors.has(key)) {
+        openEditors.delete(key);
+        drawer.classList.remove('open');
+        rbtn?.classList.remove('active');
+    } else {
+        openEditors.add(key);
+        drawer.innerHTML = mkDrawer(mac, i, configs[mac]?.outputs?.[i]);
+        drawer.classList.add('open');
+        rbtn?.classList.add('active');
+    }
+}
+
+function setRT(mac, i, type) {
+    const out = configs[mac]?.outputs?.[i];
+    if (!out) return;
+    out.rule_type = type;
+    const drawer = document.getElementById(`dr-${mac}-${i}`);
+    if (drawer) { drawer.innerHTML = mkDrawer(mac, i, out); drawer.classList.add('open'); }
+    openEditors.add(`${mac}-${i}`);
+}
+
+async function setMode(mac, i, manual, inheritState) {
+    const out = configs[mac]?.outputs?.[i];
+    if (!out) return;
+    out.manual_mode = manual;
+    if (manual && inheritState !== undefined) out.manual_state = inheritState;
+    const node = nodeCache[mac];
+    if (node) patchLive(mac, i, (node.outputs >> i) & 1, manual, openEditors.has(`${mac}-${i}`));
+    postCfg(mac);
+}
+
+async function setMState(mac, i, state) {
+    const out = configs[mac]?.outputs?.[i];
+    if (!out) return;
+    out.manual_state = state;
+    if (nodeCache[mac]) {
+        if (state) nodeCache[mac].outputs |= (1 << i);
+        else       nodeCache[mac].outputs &= ~(1 << i);
+    }
+    patchLive(mac, i, state, out.manual_mode || false, openEditors.has(`${mac}-${i}`));
+    postCfg(mac);
+}
+
+async function force(mac, i, state) {
+    if (nodeCache[mac]) {
+        if (state) nodeCache[mac].outputs |= (1 << i);
+        else       nodeCache[mac].outputs &= ~(1 << i);
+    }
+    const out = configs[mac]?.outputs?.[i];
+    patchLive(mac, i, state, out?.manual_mode || false, openEditors.has(`${mac}-${i}`));
+    fetch(`/api/node/${mac}/force`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({output:i, state})
+    });
+}
+
+async function saveLabel(mac, label) {
+    if (!configs[mac]) configs[mac] = {mac, label, outputs:[]};
+    configs[mac].label = label;
+    await postCfg(mac);
+}
+
+async function saveOutLabel(mac, i, label) {
+    const out = configs[mac]?.outputs?.[i];
+    if (!out) return;
+    out.label = label;
+    await postCfg(mac);
+}
+
+async function saveRule(mac, i) {
+    const out = configs[mac]?.outputs?.[i];
+    if (!out) return;
+
+    if (out.rule_type === R_TIMER) {
+        const onH  = +document.getElementById(`onh-${mac}-${i}`)?.value  || 0;
+        const onM  = +document.getElementById(`onm-${mac}-${i}`)?.value  || 0;
+        const offH = +document.getElementById(`offh-${mac}-${i}`)?.value || 0;
+        const offM = +document.getElementById(`offm-${mac}-${i}`)?.value || 0;
+        out.on_ms  = (onH * 60 + onM)  * 60000;
+        out.off_ms = (offH * 60 + offM) * 60000;
+    }
+
+    if (out.rule_type === R_THRESH) {
+        // Row 0 is always "menor que" → lower_val
+        // Row 1 is always "mayor que" → upper_val
+        // invert = row 0 badge is APAGAR (i.e. ON when >upper, OFF when <lower)
+        const sen  = document.getElementById(`tsen0-${mac}-${i}`)?.value;
+        const lv   = parseFloat(document.getElementById(`tval0-${mac}-${i}`)?.value);
+        const uv   = parseFloat(document.getElementById(`tval1-${mac}-${i}`)?.value);
+        const inv  = !document.getElementById(`tbadge0-${mac}-${i}`)?.classList.contains('on');
+        out.use_humidity = sen === 'hum';
+        out.invert       = inv;
+        if (!isNaN(lv)) out.lower_val = lv; else delete out.lower_val;
+        if (!isNaN(uv)) out.upper_val = uv; else delete out.upper_val;
+    }
+
+    const ok = await postCfg(mac);
+
+    // Visual save feedback on the Guardar button
+    const btn = document.getElementById(`sbtn-${mac}-${i}`);
+    if (btn) {
+        btn.textContent = ok ? '✓ Guardado' : '✗ Error';
+        btn.style.background = ok ? '#15a185' : '#c0392b';
+        btn.style.color = '#fff';
+        setTimeout(() => {
+            btn.textContent = 'Guardar';
+            btn.style.background = '';
+            btn.style.color = '';
+        }, 1500);
+    }
+}
+
+async function postCfg(mac) {
+    const cfg = configs[mac];
+    if (!cfg) return false;
+    try {
+        const r = await fetch(`/api/node/${mac}/config`, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(cfg)
+        });
+        return r.ok;
+    } catch { return false; }
+}
+
+async function fetchConfig(mac) {
+    try {
+        const r = await fetch(`/api/node/${mac}/config`);
+        if (r.ok) {
+            configs[mac] = await r.json();
+            applyConfigToUI(mac);
+        }
+    } catch {}
+}
+
+// ─── Settings panel ───────────────────────────────────────────────────────────
+function toggleSettings() { document.getElementById('settingsWrap').classList.toggle('open'); }
+function openSettings()   { document.getElementById('settingsWrap').classList.add('open'); }
+
+async function loadPresetName() {
+    try {
+        const r = await fetch('/api/config/name');
+        if (r.ok) {
+            const d = await r.json();
+            document.getElementById('presetNameInput').value = d.name || '';
+        }
+    } catch {}
+}
+
+async function savePresetName() {
+    const name = document.getElementById('presetNameInput').value.trim();
+    const btn  = document.getElementById('presetSaveBtn');
+    const r = await fetch('/api/config/name', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name})
+    });
+    btn.textContent = r.ok ? '✓ Guardado' : '✗ Error';
+    btn.style.background = r.ok ? '#15a185' : '#c0392b';
+    setTimeout(() => { btn.textContent = 'Guardar'; btn.style.background = ''; }, 1500);
+}
+
+async function saveWifi(slot) {
+    const ssid = document.getElementById('ssid'+slot).value.trim();
+    const pass = document.getElementById('pass'+slot).value;
+    if (!ssid) { toast(slot,'El SSID no puede estar vacío.',true); return; }
+    const r = await fetch('/api/wifi/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot,ssid,password:pass})});
+    toast(slot, r.ok ? 'Guardado. Conectando...' : 'Error.', !r.ok);
+    if (r.ok) setTimeout(loadWifi, 4000);
+}
+async function clearWifi(slot) {
+    document.getElementById('ssid'+slot).value = '';
+    document.getElementById('pass'+slot).value = '';
+    await fetch('/api/wifi/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot})});
+    toast(slot,'Borrado.');
+}
+function toast(slot, msg, err=false) {
+    const el = document.getElementById('wt'+slot);
+    el.textContent = msg; el.className = 'toast show'+(err?' err':'');
+    setTimeout(()=>el.className='toast',3500);
+}
+
+// ─── Config backup / restore ──────────────────────────────────────────────────
+async function downloadCfg() {
+    const blob = await fetch('/api/config').then(r=>r.blob());
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'medusa-config.json'; a.click();
+}
+async function uploadCfg(input) {
+    const text = await input.files[0]?.text();
+    if (!text) return;
+    const r = await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:text});
+    if (r.ok) { Object.keys(configs).forEach(k=>delete configs[k]); await refresh(); }
+    input.value = '';
+}
+
+// ─── Formatting ───────────────────────────────────────────────────────────────
+function fTemp(v) { return (v==null||isNaN(v)) ? '<span class="na">—°C</span>'   : `<b>${(+v).toFixed(1)}°C</b>`; }
+function fHum(v)  { return (v==null||isNaN(v)) ? '<span class="na">—%RH</span>'  : `<b>${(+v).toFixed(0)}%RH</b>`; }
+function x(s)     { return String(s??'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// ─── Fresh-config banner ──────────────────────────────────────────────────────
+// Checks whether the master has any saved config. If not, prompts the user
+// to restore a preset. Dismissed state survives the session (sessionStorage).
+async function checkFreshConfig() {
+    if (sessionStorage.getItem('banner-dismissed')) return;
+    try {
+        const cfg = await fetch('/api/config').then(r => r.json());
+        const nodes = cfg.nodes || [];
+        const hasAnyConfig = nodes.some(n =>
+            n.label ||
+            n.outputs?.some(o => o.label || (o.rule_type && o.rule_type !== 0))
+        );
+        if (!hasAnyConfig)
+            document.getElementById('presetBanner').style.display = 'flex';
+    } catch {}
+}
+function dismissBanner() {
+    sessionStorage.setItem('banner-dismissed', '1');
+    document.getElementById('presetBanner').style.display = 'none';
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+loadWifi();
+loadPresetName();
+refresh();
+checkFreshConfig();
+setInterval(refresh,  3000);
+setInterval(loadWifi, 10000);
+</script>
+</body>
+</html>

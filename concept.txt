@@ -1,0 +1,90 @@
+Medusa (or Medusa Mesh) is a node-based IO system for controlling in-house devices from a hub based on rules
+
+It's powered by an ESP32 master (classic or S3)
+and ESP32-C3 Nodes (primarily)
+
+It doesn't require real time data, and updates can be 1Hz or lower just fine
+
+The network architecture involves the master in AP and STA modes simultaneously
+
+Master:
+AP is the main hub. Node join a Medusa network (could be Medusa, Medusa-Mesh, Medusa-<hash>, whatever feels robust and simple)
+This network -Medusa- can also be joined by the user, this should then allow the user to access both Medusa's UI and a configuration panel in
+witch the user can configure the current local network credentials (their house network) - That's why it uses STA mode too
+
+Nodes:
+Nodes are powered by an ESP32-C3 Super Mini (though other devices could be use, but mostly won't)
+A node currently contains:
+* WS2812 LEDs, four of them, that can be used for showing informations
+* Four relays, for controling devices
+* Two MOSFETs driving 12V accesories in the same way it drives relays. So effectively these are 6 outputs total. 12V lines are non-critical, which means boot-up flicker is not much of an issue, if that ends up being needed to achieve pin count limits
+* An I2C temp/humidity sensor AHT10
+Nodes sholdn't need any kind of internet access... anything they need should be accessible via Master-Node communication
+Things like current time and stuff they may need sould b sent by the master
+
+UI:
+The UI is relatively simple, though configurations should be non-volatile
+Configurations exist is two levels:
+Master Configs:
+	Which include Network access and metadata
+
+Node Config:
+	This is where it gets more involved.
+	Outputs are all identical in capabilities... They can be On or Off and share the exact same of rules, regardles of being MOFSETs or Relays
+	When you first enter the UI you should see which Nodes are connected
+	You should be able to tap a node and enter its settings, which essentially includes being able to set rules for each output
+	Rules involve things like
+	* Turn on for X time (seconds, hours, minutes), Turn off for Y time (the two combined can exceed 24 hours like on for 24 hours, off for 12)
+	* Turn on between hours S and E, in 24 hour format (this isn't required just yet... we can leave it for later)
+	* Turn on when humidity / temperature is X
+	* Turn off when humidity / temperature is Y (like a thermostat)
+	* Temperature an humidty are telemetry data, and should be sent back to the master whenever the master sends new commands
+	* Manual temporary override
+
+Note the single source of truth is the Master. Master holds and sends this information to nodes
+Nodes don't keep any settings around... they just obey the master.
+
+Master sends the current state periodically based on the rules... even if nothing has changed
+
+UI shows the telemetry on the main section
+
+Ideally you should be able to download the settings as a file and upload it to reset settings
+
+I left a page_sample.html from an earlier edition of this project that can be used as a style reference. If you think it can be done better, im up for it. Maybe even more Medusas/Squid/Jellyfish-related lol
+
+---
+
+Communication:
+ESP-NOW was considered but dropped due to peer/channel config headaches.
+Chosen approach: simple UDP, Master -> Node unicast.
+Master arbiters all traffic. Nodes are agnostic to each other and the internet.
+Master computes the current output states from rules + telemetry, then pushes
+the resulting state to each node. Nodes don't evaluate rules themselves.
+UDP packet Master->Node contains: computed output states (6 booleans) + current time.
+UDP packet Node->Master contains: telemetry (temp, humidity).
+
+Node Identity:
+No hardware jumpers (pin count on C3 is tight). Nodes are identified by MAC address.
+All node firmware is identical — hardware is interchangeable.
+When a node joins the Medusa AP, it announces itself. If the master has a config
+entry for that MAC, it gets assigned and starts receiving commands. If not, the
+master ignores it until the user assigns rules to it via the UI.
+
+Config / Rules data model:
+Single source of truth is the master (stored as JSON, downloadable/uploadable via UI).
+Structure:
+  - A list of NodeConfigs, each tied to a specific MAC address
+  - Each NodeConfig has a label and 6 OutputConfigs (one per output)
+  - Each OutputConfig has a label and one Rule
+
+Rules are per-output, per-device. Threshold rules (temp/humidity) implicitly use
+that node's own AHT10 sensor — no cross-device sensor routing.
+This keeps the model simple and the hardware self-contained.
+
+Rule types:
+  - Timer: on for X duration, off for Y duration (durations can exceed 24h)
+  - Threshold: turn on when sensor >= X, turn off when sensor <= Y (thermostat-style)
+  - Schedule: on between hour S and hour E in 24h format (deferred, not required yet)
+  - Manual override: temporary on/off regardless of rule
+
+Build system: PlatformIO

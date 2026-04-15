@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa — Network Setup</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                rgb(9, 32, 34),
+                rgb(9, 32, 34) 10px,
+                rgb(9, 31, 34) 10px,
+                rgb(9, 31, 34) 20px
+            );
+        }
+
+        .page {
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 480px;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            letter-spacing: 0.05em;
+            color: rgb(26, 200, 185);
+        }
+
+        h1 span { opacity: 0.5; font-weight: 400; font-size: 1rem; }
+
+        .panel {
+            border: solid rgb(26, 148, 138) 1px;
+            background: rgba(26, 148, 138, 0.15);
+            border-radius: 5px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .panel-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+            margin-bottom: 0.2rem;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        .dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #555;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+        .dot.connected    { background: #16c5a5; box-shadow: 0 0 6px #16c5a5; }
+        .dot.disconnected { background: #a83b53; }
+
+        label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(26, 148, 138, 0.5);
+            border-radius: 4px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        input:focus { border-color: rgb(26, 148, 138); }
+        input::placeholder { opacity: 0.3; }
+
+        .row { display: flex; gap: 0.5rem; }
+
+        .btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            transition: opacity 0.12s, background 0.12s;
+        }
+        .btn:hover  { opacity: 0.85; }
+        .btn:active { opacity: 0.7; }
+
+        .btn-save  { background: #15a185; color: white; }
+        .btn-clear { background: #26413c; color: rgba(255,255,255,0.6); flex: 0 0 auto; padding: 0.5rem 1rem; }
+
+        .toast {
+            display: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.4);
+            border-left: 3px solid #16c5a5;
+        }
+        .toast.error { border-left-color: #a83b53; }
+        .toast.show  { display: block; }
+
+        .footer {
+            font-size: 0.75rem;
+            opacity: 0.3;
+            text-align: center;
+            padding-top: 0.5rem;
+        }
+
+        a { color: rgb(26, 200, 185); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div>
+        <h1>Medusa <span>Network Setup</span></h1>
+    </div>
+
+    <!-- Status -->
+    <div class="panel" id="status-panel">
+        <div class="panel-title">Status</div>
+        <div class="status-row">
+            <div class="dot" id="sta-dot"></div>
+            <span id="sta-label">Loading...</span>
+        </div>
+        <div class="status-row" style="opacity:0.5; font-size:0.8rem;">
+            AP: <span id="ap-ssid">—</span>
+        </div>
+    </div>
+
+    <!-- Network Slot 0 -->
+    <div class="panel">
+        <div class="panel-title">Primary Network</div>
+        <div>
+            <label>SSID</label>
+            <input type="text" id="ssid0" placeholder="Your Wi-Fi name" autocomplete="off">
+        </div>
+        <div>
+            <label>Password</label>
+            <input type="password" id="pass0" placeholder="Leave empty if open" autocomplete="off">
+        </div>
+        <div class="row">
+            <button class="btn btn-save"  onclick="saveSlot(0)">Save &amp; Connect</button>
+            <button class="btn btn-clear" onclick="clearSlot(0)">Clear</button>
+        </div>
+        <div class="toast" id="toast0"></div>
+    </div>
+
+    <!-- Network Slot 1 -->
+    <div class="panel">
+        <div class="panel-title">Fallback Network</div>
+        <div>
+            <label>SSID</label>
+            <input type="text" id="ssid1" placeholder="Optional fallback" autocomplete="off">
+        </div>
+        <div>
+            <label>Password</label>
+            <input type="password" id="pass1" placeholder="Leave empty if open" autocomplete="off">
+        </div>
+        <div class="row">
+            <button class="btn btn-save"  onclick="saveSlot(1)">Save</button>
+            <button class="btn btn-clear" onclick="clearSlot(1)">Clear</button>
+        </div>
+        <div class="toast" id="toast1"></div>
+    </div>
+
+    <div class="footer">
+        <a href="/">Back to Medusa</a> &nbsp;·&nbsp; Rhodune! Lab
+    </div>
+</div>
+
+<script>
+    async function loadStatus() {
+        try {
+            const res = await fetch('/api/wifi/status');
+            const s = await res.json();
+
+            document.getElementById('ap-ssid').textContent = s.ap_ssid || '—';
+
+            const dot   = document.getElementById('sta-dot');
+            const label = document.getElementById('sta-label');
+            if (s.connected) {
+                dot.className   = 'dot connected';
+                label.textContent = `Connected to ${s.ssid} — ${s.ip}`;
+            } else {
+                dot.className   = 'dot disconnected';
+                label.textContent = 'Not connected to home network';
+            }
+
+            if (s.slots) {
+                s.slots.forEach((slot, i) => {
+                    const el = document.getElementById('ssid' + i);
+                    if (el && slot.ssid) el.value = slot.ssid;
+                });
+            }
+        } catch {
+            document.getElementById('sta-label').textContent = 'Could not reach master';
+        }
+    }
+
+    function showToast(slot, msg, isError = false) {
+        const el = document.getElementById('toast' + slot);
+        el.textContent = msg;
+        el.className = 'toast show' + (isError ? ' error' : '');
+        setTimeout(() => el.className = 'toast', 3500);
+    }
+
+    async function saveSlot(slot) {
+        const ssid = document.getElementById('ssid' + slot).value.trim();
+        const pass = document.getElementById('pass' + slot).value;
+
+        if (!ssid) { showToast(slot, 'SSID cannot be empty.', true); return; }
+
+        try {
+            const res = await fetch('/api/wifi/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slot, ssid, password: pass })
+            });
+            if (res.ok) {
+                showToast(slot, 'Saved. Attempting to connect...');
+                setTimeout(loadStatus, 3000);
+            } else {
+                showToast(slot, 'Error saving credentials.', true);
+            }
+        } catch {
+            showToast(slot, 'Could not reach master.', true);
+        }
+    }
+
+    async function clearSlot(slot) {
+        document.getElementById('ssid' + slot).value = '';
+        document.getElementById('pass' + slot).value = '';
+        try {
+            await fetch('/api/wifi/clear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slot })
+            });
+            showToast(slot, 'Cleared.');
+            setTimeout(loadStatus, 1000);
+        } catch {
+            showToast(slot, 'Could not reach master.', true);
+        }
+    }
+
+    loadStatus();
+    setInterval(loadStatus, 5000);
+</script>
+</body>
+</html>

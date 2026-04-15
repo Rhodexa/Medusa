@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="../data/style.css">
 <style>
     :root {
-        --clr-on:  #1ac8b9;
-        --clr-off: #eba206;
+        --clr-on:  #1ac8a2;
+        --clr-off: #c96508be;
     }
     /* Drag cursor on display area */
     .np-display { cursor: ns-resize; touch-action: none; user-select: none; }
@@ -50,20 +50,42 @@
 
     <!-- Phase wheel -->
     <div style="display:flex; flex-direction:column; align-items:center">
-      <svg id="phase-wheel" width="148" height="148" viewBox="-74 -74 148 148">
-        <!-- Background -->
-        <circle r="65" fill="rgba(0,0,0,0.35)" stroke="rgba(26,148,138,0.2)" stroke-width="1"/>
-        <!-- Arc ring — rotated by JS -->
-        <g id="wheel-arcs"></g>
-        <!-- Fixed pointer at 12 o'clock -->
-        <polygon points="0,-71 -5,-59 5,-59" fill="white" opacity="0.9"/>
-        <!-- Center readout -->
-        <text id="wc-phase" y="-4" text-anchor="middle" fill="white"
-              font-size="12" font-weight="700" font-family="monospace" opacity="0.8">-:--</text>
-        <text id="wc-label" y="12" text-anchor="middle" fill="white"
-              font-size="8" font-family="sans-serif" opacity="0.35"
+      <svg id="phase-wheel" width="148" height="148" viewBox="-74 -74 160 148">
+        <circle r="53" fill="none" stroke="var(--clr-off)" stroke-width="15" opacity="0.85"/>
+        <circle id="on-ring" r="53" fill="none" stroke="var(--clr-on)" stroke-width="22"
+                transform="rotate(-90)" stroke-linecap="butt"
+                stroke-dasharray="0 333" stroke-dashoffset="0" opacity="0.9"/>
+        <circle r="42" fill="rgba(0,0,0,0.55)"/>
+        <polygon points="0,-45 -6,-30 6,-30" fill="white" />
+        <text id="wc-label" y="0" text-anchor="middle" fill="white"
+              font-size="25" font-family="sans-serif" opacity="0.8"
               letter-spacing="0.1em">FASE</text>
+        <text id="wc-phase" y="20" text-anchor="middle" fill="white"
+              font-size="12" font-weight="700" font-family="monospace" opacity="0.8">-:--</text>
+
+        <!-- ===== Rotation Hint ===== -->
+
+        <!-- Larger arc, pushed outward -->
+        <path d="M 69.3 -28.7 A 75 75 0 0 1 69.3 28.7"
+            opacity="0.3"
+            fill="none"
+            stroke="white"
+            stroke-width="2"
+            transform="scale(1.015)"/>
+        
+        <!-- Arrow at top (points along arc, clockwise) -->
+        <polygon points="71,-15 78,-15 75,0"
+            opacity="0.3"
+            fill="white"
+            transform="rotate(35)"/>
+
+        <polygon points="71,15 78,15 75,0"
+            opacity="0.3"
+            fill="white"
+            transform="rotate(-35)"/>
       </svg>
+
+                
       <div class="wheel-legend">
         <span><i style="background:var(--clr-on)"></i>ON</span>
         <span><i style="background:var(--clr-off)"></i>OFF</span>
@@ -258,122 +280,89 @@ function getPhaseMin() {
     return (elapsed / totalRealMs) * totalMin;
 }
 
-// Build an annular sector path (donut slice) centered at origin.
-// Angles in degrees, 0° = top (12 o'clock), clockwise.
-// Director's note: Doesn't it make more sense to build the wheel the same way you would build a
-// knob, or spinner, or progress arc?
-// One big --clr-secodnary circle, then use dash lines in SVG to fill the --clr-primary region as a fraction of progress along the phase
-// The using the dash offset allows to easily offset the phase visually.
-// This creates trouble in the future, if we add a programming, rather than an on/off sequence... but in this case that's perfectly fine, and the sectored arc would be future-us' problem.
-function annularSector(r1, r2, startDeg, spanDeg) {
-    // Full-circle guard — avoid degenerate path
-    const sweep = Math.min(spanDeg, 359.9);
-    const s = (startDeg - 90) * Math.PI / 180;
-    const e = (startDeg + sweep - 90) * Math.PI / 180;
-    const lg = sweep > 180 ? 1 : 0;
-    const f = n => n.toFixed(3);
-    const ox1 = r2*Math.cos(s), oy1 = r2*Math.sin(s);
-    const ox2 = r2*Math.cos(e), oy2 = r2*Math.sin(e);
-    const ix1 = r1*Math.cos(s), iy1 = r1*Math.sin(s);
-    const ix2 = r1*Math.cos(e), iy2 = r1*Math.sin(e);
-    return `M ${f(ox1)} ${f(oy1)} A ${r2} ${r2} 0 ${lg} 1 ${f(ox2)} ${f(oy2)}`
-         + ` L ${f(ix2)} ${f(iy2)} A ${r1} ${r1} 0 ${lg} 0 ${f(ix1)} ${f(iy1)} Z`;
-}
+const RING_R = 53;
+const RING_C = 2 * Math.PI * RING_R;   // circumference ≈ 333.0
 
 function updateWheel() {
     const onMin  = onDial.getRaw();
     const offMin = offDial.getRaw();
     const total  = onMin + offMin;
-    const arcs   = document.getElementById('wheel-arcs');
+    const onRing = document.getElementById('on-ring');
     const wcP    = document.getElementById('wc-phase');
     const wcL    = document.getElementById('wc-label');
 
     if (total === 0) {
-        arcs.innerHTML = '';
+        onRing.setAttribute('stroke-dasharray', `0 ${RING_C}`);
+        onRing.setAttribute('stroke-dashoffset', '0');
         wcP.textContent = '-:--';
         wcL.textContent = 'FASE';
+        wcL.setAttribute('fill', 'white');
         return;
     }
 
-    const phaseMin   = getPhaseMin();
-    const phaseAngle = (phaseMin / total) * 360;   // degrees into cycle
-    const onAngle    = (onMin    / total) * 360;   // how big the ON arc is
+    const phaseMin  = getPhaseMin();
+    const onLen     = (onMin / total) * RING_C;
+    // Negative offset shifts the dash pattern CCW, so the ON arc appears to rotate
+    // CCW as phaseMin increases — keeping the current phase position at the pointer.
+    const dashOffset = (phaseMin / total) * RING_C;
 
-    // Rotate the ring so the current phase aligns with the top pointer
-    arcs.setAttribute('transform', `rotate(${-phaseAngle})`);
-
-    // Rebuild arcs (only when dials change; but cheap enough to do every frame)
-    arcs.innerHTML =
-        `<path d="${annularSector(42, 64, 0, onAngle)}"
-               fill="rgba(26,200,185)" stroke="rgb(0, 0, 0)" stroke-width="1"/>` +
-        (offMin > 0
-            ? `<path d="${annularSector(42, 64, onAngle, 360 - onAngle)}"
-                      fill="rgba(235,162,6)" stroke="rgb(0, 0, 0)" stroke-width="1"/>`
-            : '');
+    onRing.setAttribute('stroke-dasharray', `${onLen} ${RING_C - onLen}`);
+    onRing.setAttribute('stroke-dashoffset', dashOffset);
 
     // Center: current phase as h:mm  + ON / OFF label
-    const ph  = Math.floor(phaseMin / 60);
-    const pm  = Math.floor(phaseMin % 60);
+    const ph = Math.floor(phaseMin / 60);
+    const pm = Math.floor(phaseMin % 60);
     wcP.textContent = `${ph}:${String(pm).padStart(2,'0')}`;
     wcL.textContent = phaseMin < onMin ? 'ON' : 'OFF';
     wcL.setAttribute('fill', phaseMin < onMin ? 'var(--clr-on)' : 'var(--clr-off)');
 }
 
-// ─── Wheel drag (rotates ring = seeks phase) ───────────────────────────────────
-// Director's notes (lol). I think this looks coo. But angle-locked wheel turning has a LONG history of being VERY annoying to use
-// Often you wanna keep dragging and have it keep rotating... there must be a better way.
-// I have a complex idea that could revolutionize wheels. (Not knobs but wheels.)
-// When the pointer is dragged, create a line that passes right through the path of motion;
-// The create a line perpendicular to it that passes through the wheel's axis.
-// Now, calculate the delta moved _along_ that axis.
-// Essentially, the line is the new coordinate space, how much you moved along that line is the amount and direction to turn the wheel
-// The distance of that line from the origin is the rate scaler
-// Let's do this math:
-// let's create the point P and P_prev. P_prev is just P from the last read.
-// P is the pointer position.
-// Let's creat O the origin. which is just 0,0
-// Then create P_start.
-// 
-// Let's create R, for rotate..
-
-// nope.. this is too hard lol
-
-/// meh... maybe a classic if x > 0, rotate clockwise when dragging down
-/// else rotate clockwise when dragging up. Nobody slides wheels sideways lol, and if they do, we can add more checks:
-// y > 0 ? or not?
-// so we just devide in quadrants with four different axis-aligned behaviours. easy, more stable.
-
+// ─── Wheel drag — tangential (cross-product) approach ─────────────────────────
+// For each pointer move, compute the component of the motion that is tangential
+// (perpendicular to the radius). This is the cross product of the radius vector
+// and the motion delta, divided by the radius magnitude:
+//   tangential = (relX·dy − relY·dx) / |rel|
+// Positive = clockwise (in screen coords where Y points down).
+// Dragging the ring CW shifts it CW → phase moves backward → phaseOffsetMs decreases.
 
 const wheelEl = document.getElementById('phase-wheel');
-let _wAngle = null;
+let _wPrev = null;
 
-function pointerAngleDeg(e) {
-    const r  = wheelEl.getBoundingClientRect();
-    const cx = r.left + r.width  / 2;
-    const cy = r.top  + r.height / 2;
-    return Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+function wheelCenter() {
+    const r = wheelEl.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 
 wheelEl.addEventListener('pointerdown', e => {
-    _wAngle = pointerAngleDeg(e);
+    _wPrev = { x: e.clientX, y: e.clientY };
     wheelEl.setPointerCapture(e.pointerId);
+    e.preventDefault();
 });
 wheelEl.addEventListener('pointermove', e => {
-    if (_wAngle === null) return;
-    let delta = pointerAngleDeg(e) - _wAngle;
-    if (delta >  180) delta -= 360;  // wrap
-    if (delta < -180) delta += 360;
-    _wAngle = pointerAngleDeg(e);
+    if (_wPrev === null) return;
+    const c = wheelCenter();
+
+    const relX = _wPrev.x - c.x;
+    const relY = _wPrev.y - c.y;
+    const dist2 = relX * relX + relY * relY;
+    if (dist2 < 4) { _wPrev = { x: e.clientX, y: e.clientY }; return; }
+
+    const dx = e.clientX - _wPrev.x;
+    const dy = e.clientY - _wPrev.y;
+    _wPrev = { x: e.clientX, y: e.clientY };
+
+    // Tangential component of motion (CW positive)
+    const tangential = (relX * dy - relY * dx) / Math.sqrt(dist2);
 
     const totalMin = onDial.getRaw() + offDial.getRaw();
     if (totalMin > 0) {
-        // clockwise drag → advance phase
         const totalRealMs = (totalMin * 60000) / SIM_SPEED;
-        phaseOffsetMs -= (delta / 360) * totalRealMs;
+        // CW drag pulls the ring CW → phase offset decreases (moves backward in cycle)
+        phaseOffsetMs -= (tangential / RING_C) * totalRealMs;
     }
 });
-wheelEl.addEventListener('pointerup',     () => { _wAngle = null; });
-wheelEl.addEventListener('pointercancel', () => { _wAngle = null; });
+wheelEl.addEventListener('pointerup',     () => { _wPrev = null; });
+wheelEl.addEventListener('pointercancel', () => { _wPrev = null; });
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // INIT
@@ -401,8 +390,6 @@ function animLoop() {
 }
 animLoop();
 
-// Static update when auto-advance is off but wheel was dragged
-wheelEl.addEventListener('pointermove', updateWheel);
 </script>
 </body>
 </html>

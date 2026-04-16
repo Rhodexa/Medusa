@@ -1,0 +1,12 @@
+{
+  "name": "medusa-ui-dev",
+  "private": true,
+  "scripts": {
+    "dev": "browser-sync start --config bs-config.js",
+    "ui": "browser-sync start --server ui-dev --files \"ui-dev/**\" --no-notify"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.3",
+    "http-proxy-middleware": "^3.0.5"
+  }
+}

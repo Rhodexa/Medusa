@@ -360,7 +360,9 @@ select option { background: rgb(9,32,34); }
     border-top: 1px solid rgba(26,148,138,0.2);
     border-bottom: 1px solid rgba(26,148,138,0.2);
     width: 100%;
-    cursor: pointer;
+    cursor: ns-resize;
+    touch-action: none;
+    user-select: none;
 }
 .np-num {
     font-size: 1.4rem;

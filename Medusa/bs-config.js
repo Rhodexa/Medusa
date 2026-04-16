@@ -7,7 +7,7 @@
  * or whatever IP it gets on your home network).
  */
 
-const ESP32_IP = "192.168.4.1";
+const ESP32_IP = "192.168.1.105";
 
 module.exports = {
     server: {
@@ -22,19 +22,16 @@ module.exports = {
 
     // Proxy /api/* and /update/* to the real ESP32
     middleware: [
-        {
-            route: /^\/(api|update)\//,
-            handle: require("http-proxy-middleware").createProxyMiddleware({
-                target: `http://${ESP32_IP}`,
-                changeOrigin: true,
-                logLevel: "silent",
-                on: {
-                    error: (err, req, res) => {
-                        res.writeHead(502, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify({ error: "ESP32 unreachable", detail: err.message }));
-                    }
+        require("http-proxy-middleware").createProxyMiddleware({
+            target: `http://${ESP32_IP}`,
+            changeOrigin: true,
+            pathFilter: ["/api", "/update"],
+            on: {
+                error: (err, req, res) => {
+                    res.writeHead(502, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ error: "ESP32 unreachable", detail: err.message }));
                 }
-            })
-        }
+            }
+        })
     ]
 };

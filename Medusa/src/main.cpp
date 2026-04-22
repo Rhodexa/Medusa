@@ -114,6 +114,19 @@ void handleGetNodes() {
         obj["humidity"]    = node->humidity;
         obj["last_seen"]   = node->lastSeen;
         obj["outputs"]     = rules.evaluate(mac, cfg, node);  // bitmask
+
+        // Timer phase info for any timer-rule outputs (keyed by output index string)
+        if (cfg) {
+            JsonObject tphases = obj["timer_phases"].to<JsonObject>();
+            for (int o = 0; o < MEDUSA_NUM_OUTPUTS; o++) {
+                if (cfg->outputs[o].rule_type != RuleType::Timer) continue;
+                uint8_t phase; uint32_t rem_ms;
+                if (!rules.getTimerState(mac, o, phase, rem_ms)) continue;
+                JsonObject tp = tphases[String(o)].to<JsonObject>();
+                tp["phase"]        = phase;
+                tp["remaining_ms"] = rem_ms;
+            }
+        }
     }
 
     String out;
@@ -152,6 +165,9 @@ void handleGetNodeConfig() {
             if (!isnan(cfg->outputs[i].threshold.lower_val)) o["lower_val"] = cfg->outputs[i].threshold.lower_val;
             if (!isnan(cfg->outputs[i].threshold.upper_val)) o["upper_val"] = cfg->outputs[i].threshold.upper_val;
         }
+        if (cfg->outputs[i].rule_type == RuleType::Replicate) {
+            o["replicate_src"] = cfg->outputs[i].replicate.src_output;
+        }
     }
     String out;
     serializeJson(doc, out);
@@ -184,8 +200,9 @@ void handleSetNodeConfig() {
             if (o["off_ms"].is<uint32_t>())         cfg->outputs[i].timer.off_ms = o["off_ms"];
             if (o["use_humidity"].is<bool>())       cfg->outputs[i].threshold.use_humidity = o["use_humidity"];
             if (o["invert"].is<bool>())             cfg->outputs[i].threshold.invert      = o["invert"];
-            if (o["lower_val"].is<float>())         cfg->outputs[i].threshold.lower_val   = o["lower_val"];
-            if (o["upper_val"].is<float>())         cfg->outputs[i].threshold.upper_val   = o["upper_val"];
+            if (o["lower_val"].is<float>())         cfg->outputs[i].threshold.lower_val      = o["lower_val"];
+            if (o["upper_val"].is<float>())         cfg->outputs[i].threshold.upper_val      = o["upper_val"];
+            if (o["replicate_src"].is<int>())       cfg->outputs[i].replicate.src_output     = (uint8_t)(int)o["replicate_src"];
             i++;
         }
     }
@@ -205,10 +222,7 @@ void handleForceOutput() {
     int output = doc["output"] | -1;
     if (output < 0 || output >= MEDUSA_NUM_OUTPUTS) { server.send(400, "text/plain", "Invalid output"); return; }
 
-    if (doc["clear"] | false)
-        rules.clearForce(mac, output);
-    else
-        rules.forceOutput(mac, output, (uint8_t)(int)(doc["state"] | 0));
+    rules.setOutputCurrent(mac, output, (uint8_t)(int)(doc["state"] | 0));
 
     server.send(200, "text/plain", "OK");
 }
@@ -216,6 +230,33 @@ void handleForceOutput() {
 // ---------------------------------------------------------------------------
 // Route handlers — Full config download / upload
 // ---------------------------------------------------------------------------
+
+// POST /api/node/<mac>/timer-phase — jump to a specific timer phase.
+// Body: { "output": 0-5, "state": 0|1, "remaining_ms": N }
+void handleSetTimerPhase() {
+    String mac = server.pathArg(0);
+    if (!server.hasArg("plain")) { server.send(400, "text/plain", "No body"); return; }
+    JsonDocument doc;
+    if (deserializeJson(doc, server.arg("plain"))) { server.send(400, "text/plain", "Bad JSON"); return; }
+
+    int output = doc["output"] | -1;
+    int state  = doc["state"]  | -1;
+    if (output < 0 || output >= MEDUSA_NUM_OUTPUTS || (state != 0 && state != 1)) {
+        server.send(400, "text/plain", "Invalid params"); return;
+    }
+
+    NodeConfig* cfg = cfgMgr.findNode(mac);
+    if (!cfg || cfg->outputs[output].rule_type != RuleType::Timer) {
+        server.send(400, "text/plain", "Not a timer output"); return;
+    }
+
+    uint32_t on_ms  = cfg->outputs[output].timer.on_ms;
+    uint32_t off_ms = cfg->outputs[output].timer.off_ms;
+    uint32_t rem_ms = doc["remaining_ms"] | (uint32_t)(state ? on_ms : off_ms);
+
+    rules.setTimerPhase(mac, output, (uint8_t)state, rem_ms);
+    server.send(200, "text/plain", "OK");
+}
 
 void handleConfigDownload() {
     server.send(200, "application/json", cfgMgr.toJSON());
@@ -306,7 +347,8 @@ void setup() {
     server.on("/api/nodes",                   HTTP_GET,  handleGetNodes);
     server.on(UriBraces("/api/node/{}/config"),HTTP_GET,  handleGetNodeConfig);
     server.on(UriBraces("/api/node/{}/config"),HTTP_POST, handleSetNodeConfig);
-    server.on(UriBraces("/api/node/{}/force"), HTTP_POST, handleForceOutput);
+    server.on(UriBraces("/api/node/{}/force"),       HTTP_POST, handleForceOutput);
+    server.on(UriBraces("/api/node/{}/timer-phase"), HTTP_POST, handleSetTimerPhase);
 
     // Config backup / restore
     server.on("/api/config",      HTTP_GET,  handleConfigDownload);
@@ -326,6 +368,20 @@ void setup() {
     server.on("/", HTTP_GET, []() {
         if (!serveFile("/index.html", "text/html"))
             server.send(503, "text/plain", "Upload filesystem image first");
+    });
+
+    // Static assets — serve any file from LittleFS by URI path
+    server.onNotFound([]() {
+        const String& path = server.uri();
+        String ct = "text/plain";
+        if      (path.endsWith(".css"))  ct = "text/css";
+        else if (path.endsWith(".js"))   ct = "application/javascript";
+        else if (path.endsWith(".html")) ct = "text/html";
+        else if (path.endsWith(".json")) ct = "application/json";
+        else if (path.endsWith(".png"))  ct = "image/png";
+        else if (path.endsWith(".ico"))  ct = "image/x-icon";
+        if (!serveFile(path, ct.c_str()))
+            server.send(404, "text/plain", "Not found");
     });
 
     server.begin();

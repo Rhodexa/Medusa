@@ -142,6 +142,10 @@ void ConfigManager::_parseOutput(const JsonObject& obj, OutputConfig& out) {
         out.threshold.upper_val    = obj["threshold"]["upper_val"]    | (float)NAN;
         out.threshold.invert       = obj["threshold"]["invert"]       | false;
     }
+
+    if (out.rule_type == RuleType::Replicate) {
+        out.replicate.src_output = obj["replicate"]["src_output"] | (uint8_t)0;
+    }
 }
 
 void ConfigManager::_serializeNode(JsonObject& obj, const NodeConfig& cfg) const {
@@ -174,6 +178,11 @@ void ConfigManager::_serializeOutput(JsonObject& obj, const OutputConfig& out) c
         if (!isnan(out.threshold.lower_val)) t["lower_val"] = out.threshold.lower_val;
         if (!isnan(out.threshold.upper_val)) t["upper_val"] = out.threshold.upper_val;
     }
+
+    if (out.rule_type == RuleType::Replicate) {
+        JsonObject r      = obj["replicate"].to<JsonObject>();
+        r["src_output"]   = out.replicate.src_output;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -183,6 +192,7 @@ void ConfigManager::_serializeOutput(JsonObject& obj, const OutputConfig& out) c
 RuleType ConfigManager::_ruleTypeFromStr(const char* s) {
     if (strcmp(s, "timer")     == 0) return RuleType::Timer;
     if (strcmp(s, "threshold") == 0) return RuleType::Threshold;
+    if (strcmp(s, "replicate") == 0) return RuleType::Replicate;
     return RuleType::None;
 }
 
@@ -190,6 +200,7 @@ const char* ConfigManager::_ruleTypeToStr(RuleType t) {
     switch (t) {
         case RuleType::Timer:     return "timer";
         case RuleType::Threshold: return "threshold";
+        case RuleType::Replicate: return "replicate";
         default:                  return "none";
     }
 }

@@ -8,7 +8,7 @@ static Adafruit_NeoPixel* _strip = nullptr;
 void Leds::begin(uint8_t pin) {
     _strip = new Adafruit_NeoPixel(LED_COUNT, pin, NEO_GRB + NEO_KHZ800);
     _strip->begin();
-    _strip->setBrightness(60);
+    _strip->setBrightness(40);
     clear();
 }
 

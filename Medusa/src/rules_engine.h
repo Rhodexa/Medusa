@@ -8,10 +8,13 @@
 // ---------------------------------------------------------------------------
 
 struct OutputRuntime {
-    uint8_t  computed;      // state the rule currently dictates (0 or 1)
-    int8_t   force;         // -1 = no force, 0 = forced OFF, 1 = forced ON
-                            // clears automatically on next rule transition
-    uint32_t timer_since;   // millis() when current timer phase started
+    uint8_t  target;             // desired state from the current rule (0 or 1)
+    uint8_t  prev_target;        // target at the last outlet-engine tick
+    uint8_t  current;            // actual output state sent to the node
+                                 // toggle writes here; engine copies target→current on change
+    uint8_t  timer_phase;        // 0 = OFF active, 1 = ON active
+    uint32_t timer_remaining_ms; // countdown for the active phase
+    uint32_t timer_last_tick;    // millis() at the last _evalTimer call
 };
 
 struct NodeRuntime {
@@ -30,12 +33,20 @@ public:
     // Creates runtime state on first call for an unknown MAC.
     uint8_t evaluate(const String& mac, const NodeConfig* cfg, const NodeInfo* node);
 
-    // Force an output ON or OFF until the rule next changes its computed state.
-    // Has no effect in manual mode (manual_mode takes priority).
-    void forceOutput(const String& mac, int outputIndex, uint8_t state);
+    // Immediately set an output's current state (UI toggle event).
+    // Has no effect in manual mode. The override holds until the rule next
+    // changes its target, at which point the outlet engine re-syncs current.
+    void setOutputCurrent(const String& mac, int outputIndex, uint8_t state);
 
-    // Clear a force on an output, letting the current computed state take over.
-    void clearForce(const String& mac, int outputIndex);
+    // Get the current timer phase (1=ON, 0=OFF) and ms remaining in that phase.
+    // Returns false if the runtime slot doesn't exist.
+    bool getTimerState(const String& mac, int outputIndex,
+                       uint8_t& outPhase, uint32_t& outRemainingMs);
+
+    // Jump to a specific timer phase with the given remaining time.
+    // Writes directly to runtime state; engine continues naturally from there.
+    void setTimerPhase(const String& mac, int outputIndex,
+                       uint8_t phase, uint32_t remaining_ms);
 
 private:
     NodeRuntime _runtime[MEDUSA_MAX_NODES];
@@ -43,11 +54,10 @@ private:
 
     NodeRuntime* _getOrCreate(const String& mac);
 
-    // Evaluate one output's rule against current telemetry and timer state.
-    // Updates runtime.computed and clears force on transition.
-    uint8_t _evaluateOutput(OutputConfig& cfg, OutputRuntime& rt,
-                            float temperature, float humidity);
+    // Compute a rule's desired state and write it to rt.target.
+    void _evaluateTarget(OutputConfig& cfg, OutputRuntime& rt,
+                         float temperature, float humidity);
 
     uint8_t _evalTimer(const TimerRule& rule, OutputRuntime& rt);
-    uint8_t _evalThreshold(const ThresholdRule& rule, float temperature, float humidity, uint8_t current);
+    uint8_t _evalThreshold(const ThresholdRule& rule, float temperature, float humidity, uint8_t prev);
 };

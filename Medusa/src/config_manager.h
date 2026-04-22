@@ -7,7 +7,7 @@
 // Rule definitions
 // ---------------------------------------------------------------------------
 
-enum class RuleType { None, Timer, Threshold };
+enum class RuleType { None, Timer, Threshold, Replicate };
 
 struct TimerRule {
     uint32_t on_ms;     // how long to stay ON per cycle
@@ -21,6 +21,10 @@ struct ThresholdRule {
     bool   invert;        // swap roles: ON above upper, OFF below lower
 };
 
+struct ReplicateRule {
+    uint8_t src_output;   // index of the output to mirror (0–5)
+};
+
 struct OutputConfig {
     String        label;
     bool          manual_mode;   // true = manual, false = auto (rule-driven)
@@ -28,6 +32,7 @@ struct OutputConfig {
     RuleType      rule_type;
     TimerRule     timer;
     ThresholdRule threshold;
+    ReplicateRule replicate;
 };
 
 struct NodeConfig {

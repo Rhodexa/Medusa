@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
+#include <math.h>
 #include "pins.h"
 #include "leds.h"
 #include "medusa_protocol.h"
@@ -34,9 +35,8 @@ static String  masterSSID;   // stored on first connect, reused for reconnects
 //   LEDs 1-4     → plug symbols    — relay outputs 0-3
 //
 // LED 0 behaviour:
-//   • Blue heartbeat pulse (200 ms on / 2 s period) — running indicator
+//   • Blue sine wobble (0.33 Hz, 50–100%) — running indicator
 //   • Green flash (400 ms) on connect or packet received
-//   • Teal when both fire simultaneously
 //   • Orange on LED 0 during WiFi blocking events (connectToMaster / reconnect)
 //
 // LEDs 1-4: deep orange when relay ON, off when OFF.
@@ -46,13 +46,11 @@ static String  masterSSID;   // stored on first connect, reused for reconnects
 
 //
 // LED 0 behaviour:
-//   Blue heartbeat — short 200 ms pulse every 2 s while running.
-//   Green flash    — 400 ms on connect or UDP packet received.
-//   Teal           — both active simultaneously (rare).
+//   Blue sine wobble — 0.33 Hz, brightness 50–100%, running indicator.
+//   Green flash      — 400 ms on connect or UDP packet received.
 //
-#define BLUE_ON_MS     50u   // heartbeat pulse width
-#define BLUE_PERIOD_MS 2000u  // heartbeat period
-#define GREEN_FLASH_MS 400u   // event flash duration (connect / packet)
+#define BLUE_WOBBLE_HZ 0.25f   // wobble frequency
+#define GREEN_FLASH_MS 400u    // event flash duration (connect / packet)
 
 static uint8_t  lastMask     = 0;
 static bool     greenPending = false;
@@ -61,24 +59,22 @@ static uint32_t greenStart   = 0;
 // Trigger a brief green flash on LED 0 (connect events, packet received).
 static void triggerGreenFlash() { greenPending = true; greenStart = millis(); }
 
+Color NEON = Color(30, 0, 50); // for Medusa 2 use purple
+
 // Called every loop iteration.
 static void updateStatusLeds() {
     if (greenPending && millis() - greenStart >= GREEN_FLASH_MS)
         greenPending = false;
 
-    uint32_t t     = millis() % BLUE_PERIOD_MS;
-    bool blueOn    = (t < BLUE_ON_MS);
+    float phase = millis() * (BLUE_WOBBLE_HZ * 2.0f * M_PI / 1000.0f);
+    uint8_t b   = (uint8_t)(180.0f * (0.65f + 0.35f * sinf(phase)));
 
-    // Blue heartbeat and green event flash coexist — both on → teal.
-    Color statusColor = Colors::OFF;
-    if      ( blueOn &&  greenPending) statusColor = Colors::TEAL;
-    else if ( blueOn && !greenPending) statusColor = Colors::BLUE;
-    else if (!blueOn &&  greenPending) statusColor = Colors::GREEN;
+    Color statusColor = Color(40, greenPending ? 80 : 0, b);
 
     leds.set(0, statusColor);
 
     for (int i = 0; i < NUM_RELAY_OUTPUTS; i++)
-        leds.set(RELAY_LED_OFFSET + i, (lastMask >> i) & 1 ? Colors::ORANGE : Colors::OFF);
+        leds.set(RELAY_LED_OFFSET + i, (lastMask >> i) & 1 ? NEON : Colors::OFF);
 
     leds.show();
 }

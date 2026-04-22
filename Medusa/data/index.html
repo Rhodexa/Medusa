@@ -1,409 +1,481 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medusa</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- SVG symbol library -->
-<svg style="display:none">
-  <!-- Lamp on (with rays) -->
-  <symbol id="ico-on" viewBox="0 0 512 512"><g fill="#fff" transform="translate(42,21)">
-    <path d="M213,85C284,85 341,143 341,213C341,261 316,302 277,324L277,405L256,427L235,427C235,438 225,448 213,448C202,448 192,438 192,427L171,427L149,405L149,324C111,302 85,261 85,213C85,143 143,85 213,85ZM235,340C228,341 221,341 213,341C206,341 199,341 192,340L192,384L235,384L235,340ZM213,128C166,128 128,166 128,213C128,260 166,299 213,299C261,299 299,261 299,213C299,166 261,128 213,128ZM229,0L229,64L197,64L197,0L229,0ZM96,308L119,330L74,375L51,353L96,308ZM330,308L375,353L353,375L308,330L330,308ZM427,197L427,229L363,229L363,197L427,197ZM64,197L64,229L0,229L0,197L64,197ZM353,51L375,74L330,119L308,96L353,51ZM74,51L119,96L96,119L51,74L74,51Z"/>
-  </g></symbol>
-  <!-- Lamp off (bulb only) -->
-  <symbol id="ico-off" viewBox="0 0 512 512"><g fill="#fff" transform="translate(42,21)">
-    <path d="M213,85C284,85 341,143 341,213C341,261 316,302 277,324L277,405L256,427L235,427C235,438 225,448 213,448C202,448 192,438 192,427L171,427L149,405L149,324C111,302 85,261 85,213C85,143 143,85 213,85ZM235,340C228,341 221,341 213,341C206,341 199,341 192,340L192,384L235,384L235,340ZM213,128C166,128 128,166 128,213C128,260 166,299 213,299C261,299 299,261 299,213C299,166 261,128 213,128Z"/>
-  </g></symbol>
-  <!-- Pencil / edit -->
-  <symbol id="ico-edit" viewBox="0 0 24 24">
-    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-  </symbol>
-  <!-- Chevron down -->
-  <symbol id="ico-chev" viewBox="0 0 24 24">
-    <path d="M7 10l5 5 5-5z"/>
-  </symbol>
-  <!-- Download -->
-  <symbol id="ico-dl" viewBox="0 0 24 24">
-    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-  </symbol>
-  <!-- Upload -->
-  <symbol id="ico-ul" viewBox="0 0 24 24">
-    <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
-  </symbol>
-  <!-- Settings gear -->
-  <symbol id="ico-gear" viewBox="0 0 24 24">
-    <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.04 7.04 0 00-1.62-.94l-.36-2.54A.484.484 0 0014 3h-4c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 00-.59.22L2.74 9.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h4c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-  </symbol>
-</svg>
+    <!-- SVG symbol library -->
+    <svg style="display:none">
+        <!-- Lamp on (with rays) -->
+        <symbol id="ico-on" viewBox="0 0 512 512">
+            <g fill="#fff" transform="translate(42,21)">
+                <path
+                    d="M213,85C284,85 341,143 341,213C341,261 316,302 277,324L277,405L256,427L235,427C235,438 225,448 213,448C202,448 192,438 192,427L171,427L149,405L149,324C111,302 85,261 85,213C85,143 143,85 213,85ZM235,340C228,341 221,341 213,341C206,341 199,341 192,340L192,384L235,384L235,340ZM213,128C166,128 128,166 128,213C128,260 166,299 213,299C261,299 299,261 299,213C299,166 261,128 213,128ZM229,0L229,64L197,64L197,0L229,0ZM96,308L119,330L74,375L51,353L96,308ZM330,308L375,353L353,375L308,330L330,308ZM427,197L427,229L363,229L363,197L427,197ZM64,197L64,229L0,229L0,197L64,197ZM353,51L375,74L330,119L308,96L353,51ZM74,51L119,96L96,119L51,74L74,51Z" />
+            </g>
+        </symbol>
+        <!-- Lamp off (bulb only) -->
+        <symbol id="ico-off" viewBox="0 0 512 512">
+            <g fill="#fff" transform="translate(42,21)">
+                <path
+                    d="M213,85C284,85 341,143 341,213C341,261 316,302 277,324L277,405L256,427L235,427C235,438 225,448 213,448C202,448 192,438 192,427L171,427L149,405L149,324C111,302 85,261 85,213C85,143 143,85 213,85ZM235,340C228,341 221,341 213,341C206,341 199,341 192,340L192,384L235,384L235,340ZM213,128C166,128 128,166 128,213C128,260 166,299 213,299C261,299 299,261 299,213C299,166 261,128 213,128Z" />
+            </g>
+        </symbol>
+        <!-- Pencil / edit -->
+        <symbol id="ico-edit" viewBox="0 0 24 24">
+            <path
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+        </symbol>
+        <!-- Chevron down -->
+        <symbol id="ico-chev" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z" />
+        </symbol>
+        <!-- Power button -->
+        <symbol id="ico-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M12 3v8"/>
+            <path d="M6.34 6.34a9 9 0 1 0 11.32 0"/>
+        </symbol>
+        <!-- Download -->
+        <symbol id="ico-dl" viewBox="0 0 24 24">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+        </symbol>
+        <!-- Upload -->
+        <symbol id="ico-ul" viewBox="0 0 24 24">
+            <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
+        </symbol>
+        <!-- Restart / reiniciar -->
+        <symbol id="ico-restart" viewBox="0 0 24 24">
+            <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </symbol>
+        <!-- Settings gear -->
+        <symbol id="ico-gear" viewBox="0 0 24 24">
+            <path
+                d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.04 7.04 0 00-1.62-.94l-.36-2.54A.484.484 0 0014 3h-4c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 00-.59.22L2.74 9.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h4c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+        </symbol>
+    </svg>
 
-<div class="page">
+    <div class="page">
 
-  <!-- Header -->
-  <div class="header">
-    <h1>Medusa</h1>
-    <div class="header-btns">
-      <button class="icon-btn" onclick="downloadCfg()">
-        <svg width="15" height="15" fill="currentColor"><use href="#ico-dl"/></svg>
-        Descargar presets
-      </button>
-      <label class="icon-btn" style="cursor:pointer">
-        <svg width="15" height="15" fill="currentColor"><use href="#ico-ul"/></svg>
-        Subir presets
-        <input type="file" accept=".json" style="display:none" onchange="uploadCfg(this)">
-      </label>
-      <button class="icon-btn" id="settingsBtn" onclick="toggleSettings()">
-        <svg width="15" height="15" fill="currentColor"><use href="#ico-gear"/></svg>
-        Configuración y Wi-Fi
-      </button>
-    </div>
-  </div>
-
-  <!-- Settings panel -->
-  <div class="settings-wrap" id="settingsWrap">
-    <div class="panel" style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <div class="panel">
-            <div class="panel-title">Preset</div>
-            <span class="field-label">Nombre</span>
-            <div style="display:flex;gap:0.5rem;align-items:center">
-                <input type="text" id="presetNameInput" placeholder="Sin nombre" autocomplete="off" style="flex:1">
-                <button class="btn btn-teal" id="presetSaveBtn" onclick="savePresetName()" style="flex-shrink:0;white-space:nowrap">Guardar</button>
+        <!-- Header -->
+        <div class="header">
+            <h1>Medusa</h1>
+            <div class="header-btns">
+                <button class="icon-btn" onclick="downloadCfg()">
+                    <svg width="15" height="15" fill="currentColor">
+                        <use href="#ico-dl" />
+                    </svg>
+                    Descargar presets
+                </button>
+                <label class="icon-btn" style="cursor:pointer">
+                    <svg width="15" height="15" fill="currentColor">
+                        <use href="#ico-ul" />
+                    </svg>
+                    Subir presets
+                    <input type="file" accept=".json" style="display:none" onchange="uploadCfg(this)">
+                </label>
+                <button class="icon-btn" id="settingsBtn" onclick="toggleSettings()">
+                    <svg width="15" height="15" fill="currentColor">
+                        <use href="#ico-gear" />
+                    </svg>
+                    Configuración y Wi-Fi
+                </button>
             </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-title">Red Wi-Fi</div>
-            <div class="status-row">
-                <div class="dot" id="staDot"></div>
-                <span id="staLabel" style="font-size:0.88rem">Cargando...</span>
-            </div>
-            <div style="opacity:0.4; font-size:0.78rem; margin-top:0.3rem">
-                AP: <span id="apSSID">—</span>
-            </div>
-        </div>
-
-        <div class="wifi-slot panel">
-            <span class="panel-title" style="margin:0 0 0.25rem">Red principal</span>
-            <span class="field-label">SSID</span>
-            <input type="text"     id="ssid0" placeholder="Nombre de tu Wi-Fi" autocomplete="off">
-            <span class="field-label">Contraseña</span>
-            <input type="password" id="pass0" placeholder="Vacío si es abierta" autocomplete="off">
-            <div class="btn-row">
-            <button class="btn btn-teal"  onclick="saveWifi(0)">Guardar y conectar</button>
-            <button class="btn btn-ghost" onclick="clearWifi(0)">Borrar</button>
-            </div>
-            <div class="toast" id="wt0"></div>
-        </div>
-
-        <div class="wifi-slot panel">
-            <span class="panel-title" style="margin:0 0 0.25rem">Red alternativa</span>
-            <span class="field-label">SSID</span>
-            <input type="text"     id="ssid1" placeholder="Alternativa opcional" autocomplete="off">
-            <span class="field-label">Contraseña</span>
-            <input type="password" id="pass1" placeholder="Vacío si es abierta" autocomplete="off">
-            <div class="btn-row">
-            <button class="btn btn-teal"  onclick="saveWifi(1)">Guardar</button>
-            <button class="btn btn-ghost" onclick="clearWifi(1)">Borrar</button>
-            </div>
-            <div class="toast" id="wt1"></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">Actualizar</div>
-            <div style="display:flex;flex-direction:column;gap:0.5rem">
-                <p>Deberías tener dos archivos: <br>
-                    1. <span class="underline">medusa-firmware.bin</span> <br>
-                    2. <span class="underline">medusa-filesystem.bin</span>
-                </p>
-                <div>
-                    <span class="field-label">Firmware (.bin)</span>
-                    <div class="btn-row" style="align-items:center">
-                        <label class="btn btn-ghost" style="cursor:pointer;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                            <span id="fwFileName">Elegir archivo…</span>
-                            <input type="file" accept=".bin" style="display:none" id="fwFile"
-                                onchange="document.getElementById('fwFileName').textContent=this.files[0]?.name||'Elegir archivo…'">
-                        </label>
-                        <button class="btn btn-teal" style="flex:0 0 auto;padding:0.38rem 0.9rem" onclick="doOTA('firmware','fwFile')">Subir</button>
+        <!-- Settings panel -->
+        <div class="settings-wrap" id="settingsWrap">
+            <div class="panel" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <div class="panel">
+                    <div class="panel-title">Preset</div>
+                    <span class="field-label">Nombre</span>
+                    <div style="display:flex;gap:0.5rem;align-items:center">
+                        <input type="text" id="presetNameInput" placeholder="Sin nombre" autocomplete="off"
+                            style="flex:1">
+                        <button class="btn btn-teal" id="presetSaveBtn" onclick="savePresetName()"
+                            style="flex-shrink:0;white-space:nowrap">Guardar</button>
                     </div>
                 </div>
-                <div style="margin-top: 1rem;">
-                    <span class="field-label">Filesystem (.bin)</span>
-                    <div class="btn-row" style="align-items:center">
-                        <label class="btn btn-ghost" style="cursor:pointer;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                            <span id="fsFileName">Elegir archivo…</span>
-                            <input type="file" accept=".bin" style="display:none" id="fsFile"
-                                onchange="document.getElementById('fsFileName').textContent=this.files[0]?.name||'Elegir archivo…'">
-                        </label>
-                        <button class="btn btn-teal" style="flex:0 0 auto;padding:0.38rem 0.9rem" onclick="doOTA('filesystem','fsFile')">Subir</button>
+
+                <div class="panel">
+                    <div class="panel-title">Red Wi-Fi</div>
+                    <div class="status-row">
+                        <div class="dot" id="staDot"></div>
+                        <span id="staLabel" style="font-size:0.88rem">Cargando...</span>
+                    </div>
+                    <div style="opacity:0.4; font-size:0.78rem; margin-top:0.3rem">
+                        AP: <span id="apSSID">—</span>
                     </div>
                 </div>
-                <div class="toast" id="otaToast"></div>
+
+                <div class="wifi-slot panel">
+                    <span class="panel-title" style="margin:0 0 0.25rem">Red principal</span>
+                    <span class="field-label">SSID</span>
+                    <input type="text" id="ssid0" placeholder="Nombre de tu Wi-Fi" autocomplete="off">
+                    <span class="field-label">Contraseña</span>
+                    <input type="password" id="pass0" placeholder="Vacío si es abierta" autocomplete="off">
+                    <div class="btn-row">
+                        <button class="btn btn-teal" onclick="saveWifi(0)">Guardar y conectar</button>
+                        <button class="btn btn-ghost" onclick="clearWifi(0)">Borrar</button>
+                    </div>
+                    <div class="toast" id="wt0"></div>
+                </div>
+
+                <div class="wifi-slot panel">
+                    <span class="panel-title" style="margin:0 0 0.25rem">Red alternativa</span>
+                    <span class="field-label">SSID</span>
+                    <input type="text" id="ssid1" placeholder="Alternativa opcional" autocomplete="off">
+                    <span class="field-label">Contraseña</span>
+                    <input type="password" id="pass1" placeholder="Vacío si es abierta" autocomplete="off">
+                    <div class="btn-row">
+                        <button class="btn btn-teal" onclick="saveWifi(1)">Guardar</button>
+                        <button class="btn btn-ghost" onclick="clearWifi(1)">Borrar</button>
+                    </div>
+                    <div class="toast" id="wt1"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Actualizar</div>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem">
+                        <p>Deberías tener dos archivos: <br>
+                            1. <span class="underline">medusa-firmware.bin</span> <br>
+                            2. <span class="underline">medusa-filesystem.bin</span>
+                        </p>
+                        <div>
+                            <span class="field-label">Firmware (.bin)</span>
+                            <div class="btn-row" style="align-items:center">
+                                <label class="btn btn-ghost"
+                                    style="cursor:pointer;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                    <span id="fwFileName">Elegir archivo…</span>
+                                    <input type="file" accept=".bin" style="display:none" id="fwFile"
+                                        onchange="document.getElementById('fwFileName').textContent=this.files[0]?.name||'Elegir archivo…'">
+                                </label>
+                                <button class="btn btn-teal" style="flex:0 0 auto;padding:0.38rem 0.9rem"
+                                    onclick="doOTA('firmware','fwFile')">Subir</button>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <span class="field-label">Filesystem (.bin)</span>
+                            <div class="btn-row" style="align-items:center">
+                                <label class="btn btn-ghost"
+                                    style="cursor:pointer;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                    <span id="fsFileName">Elegir archivo…</span>
+                                    <input type="file" accept=".bin" style="display:none" id="fsFile"
+                                        onchange="document.getElementById('fsFileName').textContent=this.files[0]?.name||'Elegir archivo…'">
+                                </label>
+                                <button class="btn btn-teal" style="flex:0 0 auto;padding:0.38rem 0.9rem"
+                                    onclick="doOTA('filesystem','fsFile')">Subir</button>
+                            </div>
+                        </div>
+                        <div class="toast" id="otaToast"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
+        <!-- Fresh-config banner (hidden until checked) -->
+        <div class="preset-banner" id="presetBanner" style="display:none">
+            <span>Sin configuración guardada. ¿Querés restaurar tus presets?</span>
+            <label class="btn btn-teal" style="cursor:pointer;font-size:0.8rem;padding:0.38rem 0.7rem">
+                Subir presets
+                <input type="file" accept=".json" style="display:none" onchange="uploadCfg(this);dismissBanner()">
+            </label>
+            <button class="btn btn-ghost" style="font-size:0.8rem" onclick="dismissBanner()">Ignorar</button>
         </div>
-  </div>
 
-  <!-- Fresh-config banner (hidden until checked) -->
-  <div class="preset-banner" id="presetBanner" style="display:none">
-    <span>Sin configuración guardada. ¿Querés restaurar tus presets?</span>
-    <label class="btn btn-teal" style="cursor:pointer;font-size:0.8rem;padding:0.38rem 0.7rem">
-      Subir presets
-      <input type="file" accept=".json" style="display:none" onchange="uploadCfg(this);dismissBanner()">
-    </label>
-    <button class="btn btn-ghost" style="font-size:0.8rem" onclick="dismissBanner()">Ignorar</button>
-  </div>
+        <!-- Node cards (populated by JS) -->
+        <div id="spinner" class="spinner-wrap">
+            <div class="spinner-ring"></div>
+            <div class="spinner-text">Buscando medusas...</div>
+        </div>
+        <div id="nodeList"></div>
 
-  <!-- Node cards (populated by JS) -->
-  <div id="spinner" class="spinner-wrap">
-    <div class="spinner-ring"></div>
-    <div class="spinner-text">Buscando medusas...</div>
-  </div>
-  <div id="nodeList"></div>
-
-<div class="footer">
-Made with Love, <br>
-by <b>Rhodune!</b>,
-for you ❤️
-</div>
-</div>
-
-<!-- Dial modal (shared by all timer dials) -->
-<div class="dial-modal-backdrop" id="dialModal">
-  <div class="dial-modal">
-    <div class="dial-modal-title" id="modalTitle"></div>
-    <input type="number" id="modalInput" min="0" inputmode="numeric">
-    <div class="dial-modal-btns">
-      <button class="btn btn-ghost" onclick="modalCancel()">Cancelar</button>
-      <button class="btn btn-teal"  onclick="modalConfirm()">Listo</button>
+        <div class="footer">
+            Made with Love, <br>
+            by <b>Rhodune!</b>,
+            for you ❤️
+        </div>
     </div>
-  </div>
-</div>
 
-<script>
-// ─── Constants ────────────────────────────────────────────────────────────────
-const R_NONE = 0, R_TIMER = 1, R_THRESH = 2;
+    <script>
+        // ─── Constants ────────────────────────────────────────────────────────────────
+        const R_NONE = 0, R_TIMER = 1, R_THRESH = 2, R_REPLICATE = 3;
 
-// ─── Dial (timer picker) ──────────────────────────────────────────────────────
+        // ─── Timer dial store ─────────────────────────────────────────────────────────
 
-const SVG_UP = `<svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 8L8 1L15 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const SVG_DN = `<svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const dialStore = {};  // `${mac}-${i}` → { on, off } each with getRaw()
+        const REINICIAR_HTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><use href="#ico-restart"/></svg>Reiniciar`; // I LOVE IT! but it has sizing problems...
+        //const REINICIAR_HTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><use href="#ico-restart"/></svg>Reiniciar`;
 
-function pickerHTML(pid, dispId, val, unit) {
-    return `<div class="num-picker" id="${pid}">
-        <button class="np-btn" id="${pid}-up">${SVG_UP}</button>
-        <div class="np-display" id="${pid}-tap">
-            <span class="np-num" id="${dispId}">${val}</span>
-            <span class="np-unit">${unit}</span>
-        </div>
-        <button class="np-btn" id="${pid}-dn">${SVG_DN}</button>
-    </div>`;
-}
+        function initTimerDials(mac, i, out) {
+            const key    = `${mac}-${i}`;
+            const onMin  = Math.round((out.on_ms  || 0) / 60000);
+            const offMin = Math.round((out.off_ms || 0) / 60000);
+            const onId   = `tdon-${mac}-${i}`;
+            const offId  = `tdoff-${mac}-${i}`;
 
-function bindLongPress(el, fn) {
-    const stop = () => { clearTimeout(_npTimer); clearInterval(_npTimer); _npTimer = null; };
-    el.addEventListener('pointerdown',   () => { fn(); _npTimer = setTimeout(() => { _npTimer = setInterval(fn, NP_RATE); }, NP_DELAY); });
-    el.addEventListener('pointerup',     stop);
-    el.addEventListener('pointerleave',  stop);
-    el.addEventListener('pointercancel', stop);
-}
+            const timerState = nodeCache[mac]?.timer_phases?.[i];
+            const timerPhase = timerState?.phase ?? 1;  // default: ON active
 
-function bindPicker(pid, stepFn, tapFn, pxPerStep) {
-    bindLongPress(document.getElementById(pid+'-up'), () => stepFn( 1));
-    bindLongPress(document.getElementById(pid+'-dn'), () => stepFn(-1));
-    const tap = document.getElementById(pid+'-tap');
-    let lastY = null, accum = 0, moved = 0;
-    tap.addEventListener('pointerdown', e => {
-        lastY = e.clientY; accum = 0; moved = 0;
-        tap.setPointerCapture(e.pointerId); e.preventDefault();
-    });
-    tap.addEventListener('pointermove', e => {
-        if (lastY === null) return;
-        const dy = lastY - e.clientY;
-        lastY = e.clientY; accum += dy; moved += Math.abs(dy);
-        while (accum >=  pxPerStep) { stepFn( 1); accum -= pxPerStep; }
-        while (accum <= -pxPerStep) { stepFn(-1); accum += pxPerStep; }
-    });
-    tap.addEventListener('pointerup',     () => { if (moved < 6) tapFn(); lastY = null; });
-    tap.addEventListener('pointercancel', () => { lastY = null; });
-}
+            // Active side shows live remaining; inactive side shows its full top value
+            const onRemMin  = timerPhase === 1 ? Math.ceil((timerState?.remaining_ms || 0) / 60000) : onMin;
+            const offRemMin = timerPhase === 0 ? Math.ceil((timerState?.remaining_ms || 0) / 60000) : offMin;
 
-function createDial(containerId, id, label, initMin, onChange) {
-    const raw = { value: Math.max(0, Math.round(initMin)) };
-    const hours   = () => Math.floor(raw.value / 60);
-    const minutes = () => raw.value % 60;
-    function update() {
-        raw.value = Math.max(0, raw.value);
-        document.getElementById(`${id}-h`).textContent = hours();
-        document.getElementById(`${id}-m`).textContent = String(minutes()).padStart(2, '0');
-        if (onChange) onChange(raw.value);
-    }
-    function stepH(dir) { raw.value += dir * 60; update(); }
-    function stepM(dir) { raw.value += dir;       update(); }
-    function editHours() {
-        openModal('Horas', hours(), 0, null, v => { raw.value += (v - hours()) * 60; update(); });
-    }
-    function editMinutes() {
-        openModal('Minutos', minutes(), 0, 59, v => { raw.value += v - minutes(); update(); });
-    }
-    document.getElementById(containerId).innerHTML = `
-        <div class="timer-row">
-            <span class="timer-lbl">${label}</span>
-            <div class="timer-pair">
-                ${pickerHTML(id+'-ph', id+'-h', hours(), 'h')}
-                ${pickerHTML(id+'-pm', id+'-m', String(minutes()).padStart(2,'0'), 'min')}
-            </div>
-        </div>`;
-    bindPicker(id+'-ph', d => stepH(d), editHours,   60);
-    bindPicker(id+'-pm', d => stepM(d), editMinutes, 14);
-    return { getRaw: () => raw.value };
-}
+            const durPickers = (id, totalMin) => `
+                <div class="timer-side-pickers">
+                    <div class="time-inp-wrap">
+                        <input type="text" inputmode="numeric" class="time-inp" id="${id}-h"
+                               value="${Math.floor(totalMin/60)}"
+                               oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                               onblur="if(!this.value)this.value='0'">
+                        <span class="time-inp-unit">h</span>
+                    </div>
+                    <div class="time-inp-wrap">
+                        <input type="text" inputmode="numeric" class="time-inp" id="${id}-m"
+                               value="${totalMin%60}"
+                               oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                               onblur="this.value=Math.min(59,Math.max(0,parseInt(this.value)||0))">
+                        <span class="time-inp-unit">min</span>
+                    </div>
+                </div>`;
 
-// ─── Dial modal ───────────────────────────────────────────────────────────────
+            // Remaining pickers: editing and blurring dials the active phase like a kitchen timer
+            const remPickers = (id, remMin, state) => `
+                <div class="timer-side-pickers">
+                    <div class="time-inp-wrap">
+                        <input type="text" inputmode="numeric" class="time-inp" id="${id}-rh"
+                               value="${Math.floor(remMin/60)}"
+                               oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                               onblur="if(!this.value)this.value='0'; applyRemaining('${mac}',${i},${state})">
+                        <span class="time-inp-unit">h</span>
+                    </div>
+                    <div class="time-inp-wrap">
+                        <input type="text" inputmode="numeric" class="time-inp" id="${id}-rm"
+                               value="${remMin%60}"
+                               oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                               onblur="this.value=Math.min(59,Math.max(0,parseInt(this.value)||0)); applyRemaining('${mac}',${i},${state})">
+                        <span class="time-inp-unit">min</span>
+                    </div>
+                </div>`;
 
-let _mCb = null, _mMax = null;
+            const sideHTML = (id, label, totalMin, remMin, state) => {
+                const active = timerPhase === state && totalMin > 0;
+                const btnLbl = active ? REINICIAR_HTML : (state === 1 ? 'Encender ahora' : 'Apagar ahora');
+                return `
+                <div class="timer-side${active ? ' active' : ''}" id="${id}-side">
+                    <div class="timer-side-sub">Duración</div>
+                    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8px;">
+                        <div class="pulse-dot"></div>
+                        <div class="timer-side-lbl" id="${id}-lbl">${label}</div>
+                        <div class="pulse-dot"></div>
+                    </div>
+                    ${durPickers(id, totalMin)}
+                    <div class="timer-side-sub" style="margin-top:0.5rem">Restante</div>
+                    ${remPickers(id, remMin, state)}
+                    <button class="timer-skip-btn${active ? ' active' : ''}" id="${id}-btn"
+                            onclick="timerStartPhase('${mac}',${i},${state})">
+                        ${btnLbl}
+                    </button>
+                </div>`;
+            };
 
-function openModal(title, cur, min, max, cb) {
-    _mCb = cb; _mMax = max;
-    document.getElementById('modalTitle').textContent = title;
-    const inp = document.getElementById('modalInput');
-    inp.min = min ?? 0; inp.max = max ?? ''; inp.value = cur;
-    document.getElementById('dialModal').classList.add('open');
-    setTimeout(() => { inp.focus(); inp.select(); }, 60);
-}
-function modalConfirm() {
-    let v = parseInt(document.getElementById('modalInput').value, 10);
-    if (isNaN(v) || v < 0) v = 0;
-    if (_mMax != null && v > _mMax) v = _mMax;
-    document.getElementById('dialModal').classList.remove('open');
-    if (_mCb) _mCb(v);
-    _mCb = null;
-}
-function modalCancel() {
-    document.getElementById('dialModal').classList.remove('open');
-    _mCb = null;
-}
-document.getElementById('dialModal').addEventListener('click',
-    e => { if (e.target === e.currentTarget) modalCancel(); });
-document.getElementById('modalInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter')  modalConfirm();
-    if (e.key === 'Escape') modalCancel();
-});
+            document.getElementById(`td-${mac}-${i}`).innerHTML = `
+                <div class="timer-sides">
+                    ${sideHTML(onId,  'Encendido', onMin,  onRemMin,  1)}
+                    <div class="timer-side-sep"></div>
+                    ${sideHTML(offId, 'Apagado',   offMin, offRemMin, 0)}
+                </div>`;
 
-// ─── Dial store ───────────────────────────────────────────────────────────────
-
-const dialStore = {};  // `${mac}-${i}` → { on: Dial, off: Dial }
-
-function initTimerDials(mac, i, out) {
-    const key    = `${mac}-${i}`;
-    const onMin  = Math.round((out.on_ms  || 0) / 60000);
-    const offMin = Math.round((out.off_ms || 0) / 60000);
-    dialStore[key] = {
-        on:  createDial(`td-on-${mac}-${i}`,  `tdon-${mac}-${i}`,  'Encender por', onMin,  null),
-        off: createDial(`td-off-${mac}-${i}`, `tdoff-${mac}-${i}`, 'Apagar por',   offMin, null)
-    };
-}
-
-// ─── State ────────────────────────────────────────────────────────────────────
-const configs     = {};        // mac → config object (fetched once per node)
-const nodeCache   = {};        // mac → last live node object from /api/nodes
-const openEditors = new Set(); // "mac-i" keys whose rule drawer is open
-
-// ─── Polling ──────────────────────────────────────────────────────────────────
-async function refresh() {
-    try {
-        const d = await fetch('/api/nodes').then(r => r.json());
-        renderNodes(d.nodes || []);
-    } catch {}
-}
-
-async function loadWifi() {
-    try {
-        const s = await fetch('/api/wifi/status').then(r => r.json());
-        document.getElementById('apSSID').textContent = s.ap_ssid || '—';
-        const dot = document.getElementById('staDot');
-        const lbl = document.getElementById('staLabel');
-        if (s.connected) {
-            dot.className = 'dot ok';
-            lbl.textContent = `Conectado — ${s.ssid}  (${s.ip})`;
-        } else {
-            dot.className = 'dot err';
-            lbl.textContent = 'Sin conexión a red local';
-            openSettings();
+            const readRaw = id => {
+                const h = Math.max(0, parseInt(document.getElementById(`${id}-h`)?.value) || 0);
+                const m = Math.min(59, Math.max(0, parseInt(document.getElementById(`${id}-m`)?.value) || 0));
+                return h * 60 + m;
+            };
+            dialStore[key] = {
+                on:  { getRaw: () => readRaw(onId) },
+                off: { getRaw: () => readRaw(offId) }
+            };
         }
-        (s.slots || []).forEach((slot, i) => {
-            const el = document.getElementById('ssid' + i);
-            if (el && slot.ssid) el.value = slot.ssid;
-        });
-    } catch {}
-}
 
-// ─── OTA update ───────────────────────────────────────────────────────────────
-async function doOTA(type, fileInputId) {
-    const fileEl = document.getElementById(fileInputId);
-    if (!fileEl.files.length) {
-        showOTAToast('Seleccioná un archivo primero.', true);
-        return;
-    }
-    const file = fileEl.files[0];
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    showOTAToast('Subiendo… no cierres esta página.', false, true);
-    try {
-        const res = await fetch('/update/' + type, { method: 'POST', body: formData });
-        if (res.ok) {
-            showOTAToast('¡Listo! El dispositivo se está reiniciando. Reconectá en unos segundos.', false, true);
-        } else {
-            showOTAToast('Error: ' + await res.text(), true);
+        // Shared fetch + optimistic update for all timer phase changes.
+        async function _postTimerPhase(mac, i, state, remaining_ms) {
+            await fetch(`/api/node/${mac}/timer-phase`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ output: i, state, remaining_ms })
+            });
+            if (nodeCache[mac]) {
+                if (state) nodeCache[mac].outputs |=  (1 << i);
+                else       nodeCache[mac].outputs &= ~(1 << i);
+                if (!nodeCache[mac].timer_phases) nodeCache[mac].timer_phases = {};
+                nodeCache[mac].timer_phases[i] = { phase: state, remaining_ms };
+            }
+            const out = configs[mac]?.outputs?.[i];
+            patchLive(mac, i, state, out?.manual_mode || false, openEditors.has(`${mac}-${i}`));
+            updateTimerRemaining(mac, i, { phase: state, remaining_ms });
         }
-    } catch {
-        // Connection reset is expected when the device reboots immediately after sending the response.
-        showOTAToast('¡Listo! El dispositivo se está reiniciando. Reconectá en unos segundos.', false, true);
-    }
-}
 
-function showOTAToast(msg, isError, persistent = false) {
-    const el = document.getElementById('otaToast');
-    el.textContent = msg;
-    el.className = 'toast show' + (isError ? ' err' : '');
-    if (!persistent) setTimeout(() => { el.className = 'toast'; }, 4500);
-}
-
-// ─── Render ───────────────────────────────────────────────────────────────────
-function renderNodes(nodes) {
-    const list    = document.getElementById('nodeList');
-    const spinner = document.getElementById('spinner');
-    if (spinner) spinner.style.display = nodes.length ? 'none' : 'flex';
-
-    const macs = new Set(nodes.map(n => n.mac));
-    [...list.querySelectorAll('.node-card')].forEach(el => {
-        if (!macs.has(el.dataset.mac)) el.remove();
-    });
-
-    nodes.forEach(node => {
-        nodeCache[node.mac] = node;
-        let card = list.querySelector(`.node-card[data-mac="${node.mac}"]`);
-        if (!card) {
-            card = mkCard(node);
-            list.appendChild(card);
-            fetchConfig(node.mac);  // load config once; never re-fetched by poll
+        // Reiniciar / Encender / Apagar: starts the given phase from its full top value
+        // (reads the duration pickers, not the remaining pickers).
+        async function timerStartPhase(mac, i, state) {
+            const id = state === 1 ? `tdon-${mac}-${i}` : `tdoff-${mac}-${i}`;
+            const h = Math.max(0, parseInt(document.getElementById(`${id}-h`)?.value) || 0);
+            const m = Math.min(59, Math.max(0, parseInt(document.getElementById(`${id}-m`)?.value) || 0));
+            await _postTimerPhase(mac, i, state, (h * 60 + m) * 60000);
         }
-        // Only touch the two live regions — card structure is never rebuilt
-        updTelem(node.mac, node);
-        updOutputs(node.mac, node);
-    });
-}
 
-// Build the card skeleton once. Telem values have stable IDs; outputs container
-// is empty and will be populated by the first updOutputs() call.
-function mkCard(node) {
-    const div = document.createElement('div');
-    div.className = 'node-card';
-    div.dataset.mac = node.mac;
-    div.innerHTML = `
+        // Remaining-picker blur handler: dials the active phase counter like a kitchen timer.
+        // No-op if this side is not currently active (inactive remaining is informational only).
+        async function applyRemaining(mac, i, state) {
+            const ts = nodeCache[mac]?.timer_phases?.[i];
+            if (ts?.phase !== state) return;
+            const id = state === 1 ? `tdon-${mac}-${i}` : `tdoff-${mac}-${i}`;
+            const rh = Math.max(0, parseInt(document.getElementById(`${id}-rh`)?.value) || 0);
+            const rm = Math.min(59, Math.max(0, parseInt(document.getElementById(`${id}-rm`)?.value) || 0));
+            await _postTimerPhase(mac, i, state, (rh * 60 + rm) * 60000);
+        }
+
+        // Called by renderNodes every 3s to refresh remaining-time pickers
+        // without touching the duration inputs or rebuilding the drawer.
+        function updateTimerRemaining(mac, i, timerState) {
+            if (!timerState) return;
+            const isOn   = timerState.phase === 1;
+            const remMin = Math.round(timerState.remaining_ms / 60000);
+            const id     = isOn ? `tdon-${mac}-${i}` : `tdoff-${mac}-${i}`;
+
+            // Update remaining pickers (skip if user is actively editing them)
+            const rh = document.getElementById(`${id}-rh`);
+            const rm = document.getElementById(`${id}-rm`);
+            if (rh && document.activeElement !== rh) rh.value = Math.floor(remMin / 60);
+            if (rm && document.activeElement !== rm) rm.value = remMin % 60;
+
+            // A side is visually active only if it's the running phase AND its top > 0
+            const onId  = `tdon-${mac}-${i}`;
+            const offId = `tdoff-${mac}-${i}`;
+            const out    = configs[mac]?.outputs?.[i];
+            const onTop  = Math.round((out?.on_ms  || 0) / 60000);
+            const offTop = Math.round((out?.off_ms || 0) / 60000);
+            const onActive  = isOn  && onTop  > 0;
+            const offActive = !isOn && offTop > 0;
+
+            const onBtn   = document.getElementById(`${onId}-btn`);
+            const offBtn  = document.getElementById(`${offId}-btn`);
+            const onSide  = document.getElementById(`${onId}-side`);
+            const offSide = document.getElementById(`${offId}-side`);
+            if (onBtn)  { onBtn.className  = `timer-skip-btn${onActive  ? ' active' : ''}`; onBtn.innerHTML  = onActive  ? REINICIAR_HTML : 'Encender ahora'; }
+            if (offBtn) { offBtn.className = `timer-skip-btn${offActive ? ' active' : ''}`; offBtn.innerHTML = offActive ? REINICIAR_HTML : 'Apagar ahora'; }
+            if (onSide)  onSide.className  = `timer-side${onActive  ? ' active' : ''}`;
+            if (offSide) offSide.className = `timer-side${offActive ? ' active' : ''}`;
+        }
+
+        // ─── State ────────────────────────────────────────────────────────────────────
+        const configs = {};        // mac → config object (fetched once per node)
+        const nodeCache = {};        // mac → last live node object from /api/nodes
+        const openEditors = new Set(); // "mac-i" keys whose rule drawer is open
+
+        // ─── Polling ──────────────────────────────────────────────────────────────────
+        async function refresh() {
+            try {
+                const d = await fetch('/api/nodes').then(r => r.json());
+                renderNodes(d.nodes || []);
+            } catch { }
+        }
+
+        async function loadWifi() {
+            try {
+                const s = await fetch('/api/wifi/status').then(r => r.json());
+                document.getElementById('apSSID').textContent = s.ap_ssid || '—';
+                const dot = document.getElementById('staDot');
+                const lbl = document.getElementById('staLabel');
+                if (s.connected) {
+                    dot.className = 'dot ok';
+                    lbl.textContent = `Conectado — ${s.ssid}  (${s.ip})`;
+                } else {
+                    dot.className = 'dot err';
+                    lbl.textContent = 'Sin conexión a red local';
+                    openSettings();
+                }
+                (s.slots || []).forEach((slot, i) => {
+                    const el = document.getElementById('ssid' + i);
+                    if (el && slot.ssid) el.value = slot.ssid;
+                });
+            } catch { }
+        }
+
+        // ─── OTA update ───────────────────────────────────────────────────────────────
+        async function doOTA(type, fileInputId) {
+            const fileEl = document.getElementById(fileInputId);
+            if (!fileEl.files.length) {
+                showOTAToast('Seleccioná un archivo primero.', true);
+                return;
+            }
+            const file = fileEl.files[0];
+            const formData = new FormData();
+            formData.append('file', file, file.name);
+            showOTAToast('Subiendo… no cierres esta página.', false, true);
+            try {
+                const res = await fetch('/update/' + type, { method: 'POST', body: formData });
+                if (res.ok) {
+                    showOTAToast('¡Listo! El dispositivo se está reiniciando. Reconectá en unos segundos.', false, true);
+                } else {
+                    showOTAToast('Error: ' + await res.text(), true);
+                }
+            } catch {
+                // Connection reset is expected when the device reboots immediately after sending the response.
+                showOTAToast('¡Listo! El dispositivo se está reiniciando. Reconectá en unos segundos.', false, true);
+            }
+        }
+
+        function showOTAToast(msg, isError, persistent = false) {
+            const el = document.getElementById('otaToast');
+            el.textContent = msg;
+            el.className = 'toast show' + (isError ? ' err' : '');
+            if (!persistent) setTimeout(() => { el.className = 'toast'; }, 4500);
+        }
+
+        // ─── Render ───────────────────────────────────────────────────────────────────
+        function renderNodes(nodes) {
+            const list = document.getElementById('nodeList');
+            const spinner = document.getElementById('spinner');
+            if (spinner) spinner.style.display = nodes.length ? 'none' : 'flex';
+
+            const macs = new Set(nodes.map(n => n.mac));
+            [...list.querySelectorAll('.node-card')].forEach(el => {
+                if (!macs.has(el.dataset.mac)) el.remove();
+            });
+
+            nodes.forEach(node => {
+                nodeCache[node.mac] = node;
+                let card = list.querySelector(`.node-card[data-mac="${node.mac}"]`);
+                if (!card) {
+                    card = mkCard(node);
+                    list.appendChild(card);
+                    fetchConfig(node.mac);  // load config once; never re-fetched by poll
+                }
+                // Only touch the two live regions — card structure is never rebuilt
+                updTelem(node.mac, node);
+                updOutputs(node.mac, node);
+                // Refresh remaining-time in any open timer editors for this node
+                for (let o = 0; o < MEDUSA_NUM_OUTPUTS; o++) {
+                    if (openEditors.has(`${node.mac}-${o}`) &&
+                        configs[node.mac]?.outputs?.[o]?.rule_type === R_TIMER) {
+                        updateTimerRemaining(node.mac, o, node.timer_phases?.[o]);
+                    }
+                }
+            });
+        }
+
+        // Build the card skeleton once. Telem values have stable IDs; outputs container
+        // is empty and will be populated by the first updOutputs() call.
+        function mkCard(node) {
+            const div = document.createElement('div');
+            div.className = 'node-card';
+            div.dataset.mac = node.mac;
+            div.innerHTML = `
         <div class="node-head">
             <input class="node-name" type="text" value="${x(node.label)}"
                 onchange="saveLabel('${node.mac}',this.value)"
@@ -420,506 +492,535 @@ function mkCard(node) {
             </div>
         </div>
         <div class="outputs" id="outs-${node.mac}"></div>`;
-    return div;
-}
-
-// Update only the two telem value spans — nothing else in the card is touched.
-function updTelem(mac, node) {
-    const t = node.temperature, h = node.humidity;
-    const tOk = t != null && !isNaN(+t);
-    const hOk = h != null && !isNaN(+h);
-    const tv = document.getElementById(`tv-${mac}`);
-    const hv = document.getElementById(`hv-${mac}`);
-    if (tv) { tv.className = `telem-val${tOk?'':' na'}`; tv.textContent = tOk ? `${(+t).toFixed(1)}°C` : '—'; }
-    if (hv) { hv.className = `telem-val${hOk?'':' na'}`; hv.textContent = hOk ? `${(+h).toFixed(0)}%`  : '—'; }
-}
-
-// First call → builds each output row via mkOutputRow (stable IDs).
-// Every subsequent call → patchLive (touches only lamp/rack/seg, never inputs).
-// Drawers are NEVER touched here — they are owned by toggleDrawer/applyConfigToUI.
-function updOutputs(mac, node) {
-    const wrap = document.getElementById(`outs-${mac}`);
-    if (!wrap) return;
-    const cfg = configs[mac];
-
-    for (let i = 0; i < 6; i++) {
-        const state  = (node.outputs >> i) & 1;
-        const out    = cfg?.outputs?.[i];
-        const manual = out?.manual_mode || false;
-        const isOpen = openEditors.has(`${mac}-${i}`);
-
-        let row = wrap.querySelector(`.output-row[data-i="${i}"]`);
-        if (!row) {
-            row = mkOutputRow(mac, i, out, state, manual, isOpen);
-            wrap.appendChild(row);
-            // Attach an empty drawer; applyConfigToUI will populate it
-            const drawer = document.createElement('div');
-            drawer.id        = `dr-${mac}-${i}`;
-            drawer.className = 'rule-drawer';
-            row.appendChild(drawer);
-        } else {
-            patchLive(mac, i, state, manual, isOpen);
+            return div;
         }
-    }
-}
 
-// Build a full output row with stable IDs for every live element.
-// Called exactly once per output per node.
-function mkOutputRow(mac, i, out, state, manual, isOpen) {
-    const row    = document.createElement('div');
-    row.className = 'output-row';
-    row.dataset.i = i;
-    const label  = out?.label || `Salida ${i}`;
-    const onAct  = manual ? `setMState('${mac}',${i},1)` : `force('${mac}',${i},1)`;
-    const offAct = manual ? `setMState('${mac}',${i},0)` : `force('${mac}',${i},0)`;
-    const main   = document.createElement('div');
-    main.className = 'output-main';
-    main.onclick   = () => toggleDrawer(mac, i);
-    main.innerHTML = `
-    <input id="oname-${mac}-${i}" class="out-name" type="text" value="${x(label)}"
-        onchange="saveOutLabel('${mac}',${i},this.value)"
-        onclick="event.stopPropagation()" onfocus="event.stopPropagation()">
+        // Update only the two telem value spans — nothing else in the card is touched.
+        function updTelem(mac, node) {
+            const t = node.temperature, h = node.humidity;
+            const tOk = t != null && !isNaN(+t);
+            const hOk = h != null && !isNaN(+h);
+            const tv = document.getElementById(`tv-${mac}`);
+            const hv = document.getElementById(`hv-${mac}`);
+            if (tv) { tv.className = `telem-val${tOk ? '' : ' na'}`; tv.textContent = tOk ? `${(+t).toFixed(1)}°C` : '—'; }
+            if (hv) { hv.className = `telem-val${hOk ? '' : ' na'}`; hv.textContent = hOk ? `${(+h).toFixed(0)}%` : '—'; }
+        }
+
+        // First call → builds each output row via mkOutputRow (stable IDs).
+        // Every subsequent call → patchLive (touches only lamp/rack/seg, never inputs).
+        // Drawers are NEVER touched here — they are owned by toggleDrawer/applyConfigToUI.
+        function updOutputs(mac, node) {
+            const wrap = document.getElementById(`outs-${mac}`);
+            if (!wrap) return;
+            const cfg = configs[mac];
+
+            for (let i = 0; i < 6; i++) {
+                const state = (node.outputs >> i) & 1;
+                const out = cfg?.outputs?.[i];
+                const manual = out?.manual_mode || false;
+                const isOpen = openEditors.has(`${mac}-${i}`);
+
+                let row = wrap.querySelector(`.output-row[data-i="${i}"]`);
+                if (!row) {
+                    row = mkOutputRow(mac, i, out, state, manual, isOpen);
+                    wrap.appendChild(row);
+                    // Attach an empty drawer; applyConfigToUI will populate it
+                    const drawer = document.createElement('div');
+                    drawer.id = `dr-${mac}-${i}`;
+                    drawer.className = 'rule-drawer';
+                    row.appendChild(drawer);
+                } else {
+                    patchLive(mac, i, state, manual, isOpen);
+                }
+            }
+        }
+
+        function ruleLabel(out) {
+            switch (out?.rule_type) {
+                case R_TIMER:     return 'Timer';
+                case R_THRESH:    return 'Sensor';
+                case R_REPLICATE: return 'Replicar';
+                default:          return 'Manual';
+            }
+        }
+
+        // Build a full output row with stable IDs for every live element.
+        // Called exactly once per output per node.
+        function mkOutputRow(mac, i, out, state, manual, isOpen) {
+            const row = document.createElement('div');
+            row.className = 'output-row';
+            row.dataset.i = i;
+            const label = out?.label || `Salida ${i}`;
+            const main = document.createElement('div');
+            main.className = 'output-main';
+            main.onclick = () => toggleDrawer(mac, i);
+            main.innerHTML = `
+    <div class="out-name-wrap">
+        <span id="oname-${mac}-${i}" class="out-name-lbl">${x(label)}</span>
+        <span id="orule-${mac}-${i}" class="out-rule-lbl">${ruleLabel(out)}</span>
+    </div>
 
         <!-- let's disable this for now... uses too much space and it is kind of redundant -->
         <div class="seg-ctrl" onclick="event.stopPropagation()" style="display: none;">
-            <div id="seg-a-${mac}-${i}" class="seg auto${!manual?' on':''}"
+            <div id="seg-a-${mac}-${i}" class="seg auto${!manual ? ' on' : ''}"
                 onclick="setMode('${mac}',${i},false)">AUTO</div>
-            <div id="seg-m-${mac}-${i}" class="seg manual${manual?' on':''}"
+            <div id="seg-m-${mac}-${i}" class="seg manual${manual ? ' on' : ''}"
                 onclick="setMode('${mac}',${i},true,${state})">MAN</div>
         </div>
 
-        <div class="rack" onclick="event.stopPropagation()">
-            <div id="rboff-${mac}-${i}" class="rack-btn rb-off${state===0?' on':''}" onclick="${offAct}">O</div>
-            <div id="rbon-${mac}-${i}"  class="rack-btn rb-on ${state===1?' on':''}" onclick="${onAct}">I</div>
+        <div id="rtog-${mac}-${i}" class="rack-toggle${state ? ' on' : ''}"
+             onclick="event.stopPropagation();toggleOutput('${mac}',${i})">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <use href="#ico-power"/>
+            </svg>
         </div>
-        <div id="rbtn-${mac}-${i}" class="rule-btn${isOpen?' active':''}">
+        <div id="rbtn-${mac}-${i}" class="rule-btn${isOpen ? ' active' : ''}">
             <svg class="rule-ico" viewBox="0 0 24 24"><use href="#ico-edit"/></svg>
             <span class="rule-lbl">Reglas</span>
         </div>
     `;
-    row.appendChild(main);
-    return row;
-}
-
-// Update only the live elements inside an existing output row.
-// Never touches the label input, never touches the drawer.
-function patchLive(mac, i, state, manual, isOpen) {
-    const onAct  = manual ? `setMState('${mac}',${i},1)` : `force('${mac}',${i},1)`;
-    const offAct = manual ? `setMState('${mac}',${i},0)` : `force('${mac}',${i},0)`;
-    const rbOff = document.getElementById(`rboff-${mac}-${i}`);
-    const rbOn  = document.getElementById(`rbon-${mac}-${i}`);
-    const lamp  = document.getElementById(`lamp-${mac}-${i}`);
-    const segA  = document.getElementById(`seg-a-${mac}-${i}`);
-    const segM  = document.getElementById(`seg-m-${mac}-${i}`);
-    const rbtn  = document.getElementById(`rbtn-${mac}-${i}`);
-    if (rbOff) { rbOff.className = `rack-btn rb-off${state===0?' on':''}`; rbOff.setAttribute('onclick', offAct); }
-    if (rbOn)  { rbOn.className  = `rack-btn rb-on ${state===1?' on':''}`; rbOn.setAttribute('onclick',  onAct);  }
-    if (lamp)  { lamp.className  = `lamp${state?' lit':''}`; lamp.querySelector('use')?.setAttribute('href', state?'#ico-on':'#ico-off'); }
-    if (segA)  segA.className = `seg auto${!manual?' on':''}`;
-    if (segM)  { segM.className = `seg manual${manual?' on':''}`; segM.setAttribute('onclick', `setMode('${mac}',${i},true,${state})`); }
-    if (rbtn)  rbtn.className = `rule-btn${isOpen?' active':''}`;
-}
-
-// Called after config is fetched or saved. Populates label inputs and
-// re-renders any closed drawers with the latest config data.
-function applyConfigToUI(mac) {
-    const cfg = configs[mac];
-    if (!cfg) return;
-    const nameEl = document.querySelector(`.node-card[data-mac="${mac}"] .node-name`);
-    if (nameEl && cfg.label) nameEl.value = cfg.label;
-    cfg.outputs?.forEach((out, i) => {
-        const el = document.getElementById(`oname-${mac}-${i}`);
-        if (el) el.value = out.label || `Salida ${i}`;
-        if (!openEditors.has(`${mac}-${i}`)) {
-            const drawer = document.getElementById(`dr-${mac}-${i}`);
-            if (drawer) drawer.innerHTML = mkDrawer(mac, i, out);
+            row.appendChild(main);
+            return row;
         }
-    });
-}
 
-function mkDrawer(mac, i, out) {
-    if (!out) return '<div class="rule-inner"><span style="opacity:.35;font-size:.8rem">Cargando...</span></div>';
-    const t = out.rule_type ?? R_NONE;
-    return `<div class="rule-inner">
+        // Update only the live elements inside an existing output row.
+        // Never touches the label span, never touches the drawer.
+        function patchLive(mac, i, state, manual, isOpen) {
+            const rtog = document.getElementById(`rtog-${mac}-${i}`);
+            const lamp = document.getElementById(`lamp-${mac}-${i}`);
+            const segA = document.getElementById(`seg-a-${mac}-${i}`);
+            const segM = document.getElementById(`seg-m-${mac}-${i}`);
+            const rbtn = document.getElementById(`rbtn-${mac}-${i}`);
+            if (rtog) { rtog.className = `rack-toggle${state ? ' on' : ''}`; }
+            if (lamp) { lamp.className = `lamp${state ? ' lit' : ''}`; lamp.querySelector('use')?.setAttribute('href', state ? '#ico-on' : '#ico-off'); }
+            if (segA) segA.className = `seg auto${!manual ? ' on' : ''}`;
+            if (segM) { segM.className = `seg manual${manual ? ' on' : ''}`; segM.setAttribute('onclick', `setMode('${mac}',${i},true,${state})`); }
+            if (rbtn) rbtn.className = `rule-btn${isOpen ? ' active' : ''}`;
+        }
+
+        // Called after config is fetched or saved. Populates label inputs and
+        // re-renders any closed drawers with the latest config data.
+        function applyConfigToUI(mac) {
+            const cfg = configs[mac];
+            if (!cfg) return;
+            const nameEl = document.querySelector(`.node-card[data-mac="${mac}"] .node-name`);
+            if (nameEl && cfg.label) nameEl.value = cfg.label;
+            cfg.outputs?.forEach((out, i) => {
+                const el = document.getElementById(`oname-${mac}-${i}`);
+                if (el) el.textContent = out.label || `Salida ${i}`;
+                const rl = document.getElementById(`orule-${mac}-${i}`);
+                if (rl) rl.textContent = ruleLabel(out);
+                if (!openEditors.has(`${mac}-${i}`)) {
+                    const drawer = document.getElementById(`dr-${mac}-${i}`);
+                    if (drawer) drawer.innerHTML = mkDrawer(mac, i, out);
+                }
+            });
+        }
+
+        function mkDrawer(mac, i, out) {
+            if (!out) return '<div class="rule-inner"><span style="opacity:.35;font-size:.8rem">Cargando...</span></div>';
+            const t = out.rule_type ?? R_NONE;
+            return `<div class="rule-inner">
+        <div>
+            <div class="field-label">Renombrar:</div>
+            <input type="text" id="oname-inp-${mac}-${i}" value="${x(out.label || `Salida ${i}`)}"
+                   onchange="saveOutLabel('${mac}',${i},this.value)">
+        </div>
         <div class="type-row">
-            <div class="type-btn type-btn-man ${t===R_NONE  ?'on':''}" onclick="setRT('${mac}',${i},${R_NONE})">Manual</div>
-            <div class="type-btn ${t===R_TIMER ?'on':''}" onclick="setRT('${mac}',${i},${R_TIMER})">Temporizador</div>
-            <div class="type-btn ${t===R_THRESH?'on':''}" onclick="setRT('${mac}',${i},${R_THRESH})">Sensor</div>
+            <div class="type-btn type-btn-man ${t === R_NONE ? 'on' : ''}" onclick="setRT('${mac}',${i},${R_NONE})">Manual</div>
+            <div class="type-btn ${t === R_TIMER ? 'on' : ''}" onclick="setRT('${mac}',${i},${R_TIMER})">Timer</div>
+            <div class="type-btn ${t === R_THRESH ? 'on' : ''}" onclick="setRT('${mac}',${i},${R_THRESH})">Sensor</div>
+            <div class="type-btn ${t === R_REPLICATE ? 'on' : ''}" onclick="setRT('${mac}',${i},${R_REPLICATE})">Replicar</div>
         </div>
-        ${t===R_TIMER  ? mkTimerFields(mac,i) : ''}
-        ${t===R_THRESH ? mkThreshFields(mac,i,out) : ''}
-        ${t!==R_NONE ? `<button class="save-rule" id="sbtn-${mac}-${i}" onclick="saveRule('${mac}',${i})">Guardar</button>` : ''}
+        ${t === R_TIMER ? mkTimerFields(mac, i) : ''}
+        ${t === R_THRESH ? mkThreshFields(mac, i, out) : ''}
+        ${t === R_REPLICATE ? mkReplicateFields(mac, i, out) : ''}
+        ${t !== R_NONE ? `<button class="save-rule" id="sbtn-${mac}-${i}" onclick="saveRule('${mac}',${i})">Guardar</button>` : ''}
     </div>`;
-}
-
-function mkTimerFields(mac, i) {
-    // Placeholder containers — populated by initTimerDials() after HTML is in the DOM.
-    return `<div id="td-on-${mac}-${i}"></div><div id="td-off-${mac}-${i}"></div>`;
-}
-
-function mkThreshFields(mac, i, out) {
-    const hum  = out.use_humidity ?? false;
-    const inv  = out.invert ?? false;
-    const unit = hum ? '%' : '°C';
-    const sen  = hum ? 'hum' : 'temp';
-    const val0 = out.lower_val ?? 20;
-    const val1 = out.upper_val ?? 30;
-    const cls0 = inv ? 'off' : 'on';
-    const cls1 = inv ? 'on'  : 'off';
-    const lbl0 = inv ? 'APAGAR'   : 'ENCENDER';
-    const lbl1 = inv ? 'ENCENDER' : 'APAGAR';
-
-    const senSel = (r) => `<select class="thresh-sensor-sel" id="tsen${r}-${mac}-${i}"
-        onchange="syncThreshSensor('${mac}',${i},${r})">
-        <option value="temp" ${sen==='temp'?'selected':''}>Temperatura</option>
-        <option value="hum"  ${sen==='hum' ?'selected':''}>Humedad</option>
-    </select>`;
-
-    const picker = (r, val) => `<div class="num-picker">
-        <button class="np-btn"
-            onpointerdown="npStart('tval${r}-${mac}-${i}',1)"
-            onpointerup="npStop()" onpointerleave="npStop()" onpointercancel="npStop()">
-            <svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 8L8 1L15 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="np-display">
-            <input type="number" class="np-num" id="tval${r}-${mac}-${i}" value="${val}"
-                step="1" style="width:4ch" onblur="npCommit(this)">
-            <span class="np-unit" id="tunit${r}-${mac}-${i}">${unit}</span>
-        </div>
-        <button class="np-btn"
-            onpointerdown="npStart('tval${r}-${mac}-${i}',-1)"
-            onpointerup="npStop()" onpointerleave="npStop()" onpointercancel="npStop()">
-            <svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-    </div>`;
-
-    const arrow = `<svg width="18" height="10" viewBox="0 0 18 10" fill="none">
-        <path d="M1 5H16M16 5L11 1M16 5L11 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`;
-
-    return `<div class="thresh-inner"><div class="thresh-grid">
-        <div class="tg-hdr">Sensor</div>
-        <div class="tg-hdr">Condición</div>
-        <div class="tg-hdr">Valor</div>
-        <div></div>
-        <div class="tg-hdr">Salida</div>
-
-        <div>${senSel(0)}</div>
-        <div class="tg-cond">
-            <svg class="thresh-chevron" width="32" height="32" viewBox="0 0 10 12" fill="none"><path d="M8 1L2 6L8 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="thresh-cond-lbl">menor que</span>
-        </div>
-        ${picker(0, val0)}
-        <div class="thresh-arrow">${arrow}</div>
-        <button class="thresh-badge ${cls0}" id="tbadge0-${mac}-${i}" onclick="swapThreshActions('${mac}',${i})">${lbl0}</button>
-
-        <div></div><div></div><div></div><div></div>
-        <button class="thresh-swap-btn" onclick="swapThreshActions('${mac}',${i})">
-            <svg width="36" height="36" viewBox="0 0 24 20" fill="none">
-                <path d="M6 2v14M6 16l-3-4M6 16l3-4M18 16V2M18 2l-3 4M18 2l3 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-
-        <div>${senSel(1)}</div>
-        <div class="tg-cond">
-            <svg class="thresh-chevron" width="32" height="32" viewBox="0 0 10 12" fill="none"><path d="M2 1L8 6L2 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="thresh-cond-lbl">mayor que</span>
-        </div>
-        ${picker(1, val1)}
-        <div class="thresh-arrow">${arrow}</div>
-        <button class="thresh-badge ${cls1}" id="tbadge1-${mac}-${i}" onclick="swapThreshActions('${mac}',${i})">${lbl1}</button>
-    </div></div>`;
-}
-
-function syncThreshSensor(mac, i, src) {
-    const val  = document.getElementById(`tsen${src}-${mac}-${i}`)?.value;
-    const other = src === 0 ? 1 : 0;
-    const otherSel = document.getElementById(`tsen${other}-${mac}-${i}`);
-    if (otherSel) otherSel.value = val;
-    const unit = val === 'hum' ? '%' : '°C';
-    [0, 1].forEach(r => {
-        const el = document.getElementById(`tunit${r}-${mac}-${i}`);
-        if (el) el.textContent = unit;
-    });
-}
-
-function swapThreshActions(mac, i) {
-    const b0 = document.getElementById(`tbadge0-${mac}-${i}`);
-    const b1 = document.getElementById(`tbadge1-${mac}-${i}`);
-    if (!b0 || !b1) return;
-    const wasOn = b0.classList.contains('on');
-    b0.className = `thresh-badge ${wasOn ? 'off' : 'on'}`;
-    b0.textContent = wasOn ? 'APAGAR' : 'ENCENDER';
-    b1.className = `thresh-badge ${wasOn ? 'on' : 'off'}`;
-    b1.textContent = wasOn ? 'ENCENDER' : 'APAGAR';
-}
-
-// Number picker — long-press for continuous step, optional clamping
-const NP_DELAY = 380, NP_RATE = 100;
-let _npTimer = null;
-function npTick(id, dir, step, min, max) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let v = Math.round((parseFloat(el.value) + dir * (step ?? 1)) * 10) / 10;
-    if (min != null && v < min) v = min;
-    if (max != null && v > max) v = max;
-    el.value = v % 1 === 0 ? String(Math.round(v)) : v.toFixed(1);
-}
-function npStart(id, dir, step, min, max) {
-    npTick(id, dir, step, min, max);
-    _npTimer = setTimeout(() => { _npTimer = setInterval(() => npTick(id, dir, step, min, max), NP_RATE); }, NP_DELAY);
-}
-function npStop() { clearTimeout(_npTimer); clearInterval(_npTimer); _npTimer = null; }
-// Clamp a typed value on blur
-function npCommit(el, min, max) {
-    let v = parseFloat(el.value);
-    if (isNaN(v)) v = min ?? 0;
-    if (min != null && v < min) v = min;
-    if (max != null && v > max) v = max;
-    el.value = v % 1 === 0 ? String(Math.round(v)) : v.toFixed(1);
-}
-
-// ─── Actions ──────────────────────────────────────────────────────────────────
-
-// Open drawer: render fresh from current config so values are always up to date.
-// Close drawer: just hide it — content is preserved so re-open is instant.
-function toggleDrawer(mac, i) {
-    const key    = `${mac}-${i}`;
-    const drawer = document.getElementById(`dr-${mac}-${i}`);
-    const rbtn   = document.getElementById(`rbtn-${mac}-${i}`);
-    if (!drawer) return;
-    if (openEditors.has(key)) {
-        openEditors.delete(key);
-        drawer.classList.remove('open');
-        rbtn?.classList.remove('active');
-    } else {
-        openEditors.add(key);
-        const out = configs[mac]?.outputs?.[i];
-        drawer.innerHTML = mkDrawer(mac, i, out);
-        drawer.classList.add('open');
-        rbtn?.classList.add('active');
-        if (out?.rule_type === R_TIMER) initTimerDials(mac, i, out);
-    }
-}
-
-function setRT(mac, i, type) {
-    const out = configs[mac]?.outputs?.[i];
-    if (!out) return;
-    out.rule_type = type;
-    const drawer = document.getElementById(`dr-${mac}-${i}`);
-    if (drawer) {
-        drawer.innerHTML = mkDrawer(mac, i, out);
-        drawer.classList.add('open');
-        if (type === R_TIMER) initTimerDials(mac, i, out);
-    }
-    openEditors.add(`${mac}-${i}`);
-}
-
-async function setMode(mac, i, manual, inheritState) {
-    const out = configs[mac]?.outputs?.[i];
-    if (!out) return;
-    out.manual_mode = manual;
-    if (manual && inheritState !== undefined) out.manual_state = inheritState;
-    const node = nodeCache[mac];
-    if (node) patchLive(mac, i, (node.outputs >> i) & 1, manual, openEditors.has(`${mac}-${i}`));
-    postCfg(mac);
-}
-
-async function setMState(mac, i, state) {
-    const out = configs[mac]?.outputs?.[i];
-    if (!out) return;
-    out.manual_state = state;
-    if (nodeCache[mac]) {
-        if (state) nodeCache[mac].outputs |= (1 << i);
-        else       nodeCache[mac].outputs &= ~(1 << i);
-    }
-    patchLive(mac, i, state, out.manual_mode || false, openEditors.has(`${mac}-${i}`));
-    postCfg(mac);
-}
-
-async function force(mac, i, state) {
-    if (nodeCache[mac]) {
-        if (state) nodeCache[mac].outputs |= (1 << i);
-        else       nodeCache[mac].outputs &= ~(1 << i);
-    }
-    const out = configs[mac]?.outputs?.[i];
-    patchLive(mac, i, state, out?.manual_mode || false, openEditors.has(`${mac}-${i}`));
-    fetch(`/api/node/${mac}/force`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({output:i, state})
-    });
-}
-
-async function saveLabel(mac, label) {
-    if (!configs[mac]) configs[mac] = {mac, label, outputs:[]};
-    configs[mac].label = label;
-    await postCfg(mac);
-}
-
-async function saveOutLabel(mac, i, label) {
-    const out = configs[mac]?.outputs?.[i];
-    if (!out) return;
-    out.label = label;
-    await postCfg(mac);
-}
-
-async function saveRule(mac, i) {
-    const out = configs[mac]?.outputs?.[i];
-    if (!out) return;
-
-    if (out.rule_type === R_TIMER) {
-        const dials = dialStore[`${mac}-${i}`];
-        if (dials) {
-            out.on_ms  = dials.on.getRaw()  * 60000;
-            out.off_ms = dials.off.getRaw() * 60000;
         }
-    }
 
-    if (out.rule_type === R_THRESH) {
-        // Row 0 is always "menor que" → lower_val
-        // Row 1 is always "mayor que" → upper_val
-        // invert = row 0 badge is APAGAR (i.e. ON when >upper, OFF when <lower)
-        const sen  = document.getElementById(`tsen0-${mac}-${i}`)?.value;
-        const lv   = parseFloat(document.getElementById(`tval0-${mac}-${i}`)?.value);
-        const uv   = parseFloat(document.getElementById(`tval1-${mac}-${i}`)?.value);
-        const inv  = !document.getElementById(`tbadge0-${mac}-${i}`)?.classList.contains('on');
-        out.use_humidity = sen === 'hum';
-        out.invert       = inv;
-        if (!isNaN(lv)) out.lower_val = lv; else delete out.lower_val;
-        if (!isNaN(uv)) out.upper_val = uv; else delete out.upper_val;
-    }
-
-    const ok = await postCfg(mac);
-
-    // Visual save feedback on the Guardar button
-    const btn = document.getElementById(`sbtn-${mac}-${i}`);
-    if (btn) {
-        btn.textContent = ok ? '✓ Guardado' : '✗ Error';
-        btn.style.background = ok ? '#15a185' : '#c0392b';
-        btn.style.color = '#fff';
-        setTimeout(() => {
-            btn.textContent = 'Guardar';
-            btn.style.background = '';
-            btn.style.color = '';
-        }, 1500);
-    }
-}
-
-async function postCfg(mac) {
-    const cfg = configs[mac];
-    if (!cfg) return false;
-    try {
-        const r = await fetch(`/api/node/${mac}/config`, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify(cfg)
-        });
-        return r.ok;
-    } catch { return false; }
-}
-
-async function fetchConfig(mac) {
-    try {
-        const r = await fetch(`/api/node/${mac}/config`);
-        if (r.ok) {
-            configs[mac] = await r.json();
-            applyConfigToUI(mac);
+        function mkTimerFields(mac, i) {
+            // Single container — initTimerDials() builds the full side-by-side layout inside.
+            return `<div id="td-${mac}-${i}"></div>`;
         }
-    } catch {}
-}
 
-// ─── Settings panel ───────────────────────────────────────────────────────────
-function toggleSettings() { document.getElementById('settingsWrap').classList.toggle('open'); }
-function openSettings()   { document.getElementById('settingsWrap').classList.add('open'); }
+        function mkThreshFields(mac, i, out) {
+            const hum = out.use_humidity ?? false;
+            const inv = out.invert ?? false;
+            const sen = hum ? 'hum' : 'temp';
+            const unit = hum ? '%' : '°C';
 
-async function loadPresetName() {
-    try {
-        const r = await fetch('/api/config/name');
-        if (r.ok) {
-            const d = await r.json();
-            document.getElementById('presetNameInput').value = d.name || '';
+            // Map data model → UI: which condition and value goes on each side
+            const onCond  = inv ? 'gt' : 'lt';
+            const offCond = inv ? 'lt' : 'gt';
+            const onVal   = inv ? (out.upper_val ?? 30) : (out.lower_val ?? 20);
+            const offVal  = inv ? (out.lower_val ?? 20) : (out.upper_val ?? 30);
+
+            const senSel = (side) => `<select id="tsen-${side}-${mac}-${i}"
+                onchange="syncThreshSide('${mac}',${i},'${side}')">
+                <option value="temp" ${sen === 'temp' ? 'selected' : ''}>Temperatura</option>
+                <option value="hum"  ${sen === 'hum'  ? 'selected' : ''}>Humedad</option>
+            </select>`;
+
+            const condSel = (side, cond) => `<select id="tcond-${side}-${mac}-${i}"
+                onchange="syncThreshCond('${mac}',${i},'${side}')">
+                <option value="lt" ${cond === 'lt' ? 'selected' : ''}>[&lt;] menor que</option>
+                <option value="gt" ${cond === 'gt' ? 'selected' : ''}>[&gt;] mayor que</option>
+            </select>`;
+
+            const valInp = (side, val) => `<div class="timer-side-pickers">
+                <div class="time-inp-wrap">
+                    <input type="text" inputmode="decimal" class="time-inp thresh-val-inp"
+                           id="tval-${side}-${mac}-${i}" value="${val}"
+                           oninput="this.value=this.value.replace(/[^0-9.\\-]/g,'')">
+                    <span class="time-inp-unit" id="tunit-${side}-${mac}-${i}">${unit}</span>
+                </div>
+            </div>`;
+
+            const sideHTML = (side, lbl, cond, val) => `
+            <div class="timer-side">
+                <div class="timer-side-lbl">${lbl}</div>
+                <div class="timer-side-sub">cuando</div>
+                ${senSel(side)}
+                ${condSel(side, cond)}
+                ${valInp(side, val)}
+            </div>`;
+
+            return `<div class="timer-sides">
+                ${sideHTML('on',  'Encender', onCond,  onVal)}
+                <div class="timer-side-sep"></div>
+                ${sideHTML('off', 'Apagar',   offCond, offVal)}
+            </div>`;
         }
-    } catch {}
-}
 
-async function savePresetName() {
-    const name = document.getElementById('presetNameInput').value.trim();
-    const btn  = document.getElementById('presetSaveBtn');
-    const r = await fetch('/api/config/name', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name})
-    });
-    btn.textContent = r.ok ? '✓ Guardado' : '✗ Error';
-    btn.style.background = r.ok ? '#15a185' : '#c0392b';
-    setTimeout(() => { btn.textContent = 'Guardar'; btn.style.background = ''; }, 1500);
-}
+        function mkReplicateFields(mac, i, out) {
+            const cfg = configs[mac];
+            const opts = [];
+            for (let j = 0; j < MEDUSA_NUM_OUTPUTS; j++) {
+                if (j === i) continue;
+                const lbl = cfg?.outputs?.[j]?.label || `Salida ${j}`;
+                const sel = (out.replicate_src === j) ? ' selected' : '';
+                opts.push(`<option value="${j}"${sel}>${lbl}</option>`);
+            }
+            return `<div>
+                <div class="field-label">Copiar estado de</div>
+                <select id="replsrc-${mac}-${i}">${opts.join('')}</select>
+            </div>`;
+        }
 
-async function saveWifi(slot) {
-    const ssid = document.getElementById('ssid'+slot).value.trim();
-    const pass = document.getElementById('pass'+slot).value;
-    if (!ssid) { toast(slot,'El SSID no puede estar vacío.',true); return; }
-    const r = await fetch('/api/wifi/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot,ssid,password:pass})});
-    toast(slot, r.ok ? 'Guardado. Conectando...' : 'Error.', !r.ok);
-    if (r.ok) setTimeout(loadWifi, 4000);
-}
-async function clearWifi(slot) {
-    document.getElementById('ssid'+slot).value = '';
-    document.getElementById('pass'+slot).value = '';
-    await fetch('/api/wifi/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot})});
-    toast(slot,'Borrado.');
-}
-function toast(slot, msg, err=false) {
-    const el = document.getElementById('wt'+slot);
-    el.textContent = msg; el.className = 'toast show'+(err?' err':'');
-    setTimeout(()=>el.className='toast',3500);
-}
+        const MEDUSA_NUM_OUTPUTS = 6;
 
-// ─── Config backup / restore ──────────────────────────────────────────────────
-async function downloadCfg() {
-    const blob = await fetch('/api/config').then(r=>r.blob());
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = 'medusa-config.json'; a.click();
-}
-async function uploadCfg(input) {
-    const text = await input.files[0]?.text();
-    if (!text) return;
-    const r = await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:text});
-    if (r.ok) { Object.keys(configs).forEach(k=>delete configs[k]); await refresh(); }
-    input.value = '';
-}
+        function syncThreshSide(mac, i, changedSide) {
+            const other = changedSide === 'on' ? 'off' : 'on';
+            const val = document.getElementById(`tsen-${changedSide}-${mac}-${i}`)?.value;
+            const otherSel = document.getElementById(`tsen-${other}-${mac}-${i}`);
+            if (otherSel) otherSel.value = val;
+            const unit = val === 'hum' ? '%' : '°C';
+            ['on', 'off'].forEach(s => {
+                const el = document.getElementById(`tunit-${s}-${mac}-${i}`);
+                if (el) el.textContent = unit;
+            });
+        }
 
-// ─── Formatting ───────────────────────────────────────────────────────────────
-function fTemp(v) { return (v==null||isNaN(v)) ? '<span class="na">—°C</span>'   : `<b>${(+v).toFixed(1)}°C</b>`; }
-function fHum(v)  { return (v==null||isNaN(v)) ? '<span class="na">—%RH</span>'  : `<b>${(+v).toFixed(0)}%RH</b>`; }
-function x(s)     { return String(s??'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+        function syncThreshCond(mac, i, changedSide) {
+            const other = changedSide === 'on' ? 'off' : 'on';
+            const val = document.getElementById(`tcond-${changedSide}-${mac}-${i}`)?.value;
+            const otherSel = document.getElementById(`tcond-${other}-${mac}-${i}`);
+            if (otherSel) otherSel.value = val === 'gt' ? 'lt' : 'gt';
+        }
 
-// ─── Fresh-config banner ──────────────────────────────────────────────────────
-// Checks whether the master has any saved config. If not, prompts the user
-// to restore a preset. Dismissed state survives the session (sessionStorage).
-async function checkFreshConfig() {
-    if (sessionStorage.getItem('banner-dismissed')) return;
-    try {
-        const cfg = await fetch('/api/config').then(r => r.json());
-        const nodes = cfg.nodes || [];
-        const hasAnyConfig = nodes.some(n =>
-            n.label ||
-            n.outputs?.some(o => o.label || (o.rule_type && o.rule_type !== 0))
-        );
-        if (!hasAnyConfig)
-            document.getElementById('presetBanner').style.display = 'flex';
-    } catch {}
-}
-function dismissBanner() {
-    sessionStorage.setItem('banner-dismissed', '1');
-    document.getElementById('presetBanner').style.display = 'none';
-}
+        // Number picker — long-press for continuous step, optional clamping
+        const NP_DELAY = 380, NP_RATE = 100;
+        let _npTimer = null;
+        function npTick(id, dir, step, min, max) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let v = Math.round((parseFloat(el.value) + dir * (step ?? 1)) * 10) / 10;
+            if (min != null && v < min) v = min;
+            if (max != null && v > max) v = max;
+            el.value = v % 1 === 0 ? String(Math.round(v)) : v.toFixed(1);
+        }
+        function npStart(id, dir, step, min, max) {
+            npTick(id, dir, step, min, max);
+            _npTimer = setTimeout(() => { _npTimer = setInterval(() => npTick(id, dir, step, min, max), NP_RATE); }, NP_DELAY);
+        }
+        function npStop() { clearTimeout(_npTimer); clearInterval(_npTimer); _npTimer = null; }
+        // Clamp a typed value on blur
+        function npCommit(el, min, max) {
+            let v = parseFloat(el.value);
+            if (isNaN(v)) v = min ?? 0;
+            if (min != null && v < min) v = min;
+            if (max != null && v > max) v = max;
+            el.value = v % 1 === 0 ? String(Math.round(v)) : v.toFixed(1);
+        }
 
-// ─── Boot ─────────────────────────────────────────────────────────────────────
-loadWifi();
-loadPresetName();
-refresh();
-checkFreshConfig();
-setInterval(refresh,  3000);
-setInterval(loadWifi, 10000);
-</script>
+        // ─── Actions ──────────────────────────────────────────────────────────────────
+
+        // Open drawer: render fresh from current config so values are always up to date.
+        // Close drawer: just hide it — content is preserved so re-open is instant.
+        function toggleDrawer(mac, i) {
+            const key = `${mac}-${i}`;
+            const drawer = document.getElementById(`dr-${mac}-${i}`);
+            const rbtn = document.getElementById(`rbtn-${mac}-${i}`);
+            if (!drawer) return;
+            if (openEditors.has(key)) {
+                openEditors.delete(key);
+                drawer.classList.remove('open');
+                rbtn?.classList.remove('active');
+            } else {
+                openEditors.add(key);
+                const out = configs[mac]?.outputs?.[i];
+                drawer.innerHTML = mkDrawer(mac, i, out);
+                drawer.classList.add('open');
+                rbtn?.classList.add('active');
+                if (out?.rule_type === R_TIMER) initTimerDials(mac, i, out);
+            }
+        }
+
+        function setRT(mac, i, type) {
+            const out = configs[mac]?.outputs?.[i];
+            if (!out) return;
+            out.rule_type = type;
+            const drawer = document.getElementById(`dr-${mac}-${i}`);
+            if (drawer) {
+                drawer.innerHTML = mkDrawer(mac, i, out);
+                drawer.classList.add('open');
+                if (type === R_TIMER) initTimerDials(mac, i, out);
+            }
+            openEditors.add(`${mac}-${i}`);
+            const rl = document.getElementById(`orule-${mac}-${i}`);
+            if (rl) rl.textContent = ruleLabel(out);
+        }
+
+        async function setMode(mac, i, manual, inheritState) {
+            const out = configs[mac]?.outputs?.[i];
+            if (!out) return;
+            out.manual_mode = manual;
+            if (manual && inheritState !== undefined) out.manual_state = inheritState;
+            const node = nodeCache[mac];
+            if (node) patchLive(mac, i, (node.outputs >> i) & 1, manual, openEditors.has(`${mac}-${i}`));
+            postCfg(mac);
+        }
+
+        async function setMState(mac, i, state) {
+            const out = configs[mac]?.outputs?.[i];
+            if (!out) return;
+            out.manual_state = state;
+            if (nodeCache[mac]) {
+                if (state) nodeCache[mac].outputs |= (1 << i);
+                else nodeCache[mac].outputs &= ~(1 << i);
+            }
+            patchLive(mac, i, state, out.manual_mode || false, openEditors.has(`${mac}-${i}`));
+            postCfg(mac);
+        }
+
+        function toggleOutput(mac, i) {
+            const node = nodeCache[mac];
+            const out = configs[mac]?.outputs?.[i];
+            const cur = node ? (node.outputs >> i) & 1 : 0;
+            if (out?.manual_mode) setMState(mac, i, cur ? 0 : 1);
+            else force(mac, i, cur ? 0 : 1);
+        }
+
+        async function force(mac, i, state) {
+            if (nodeCache[mac]) {
+                if (state) nodeCache[mac].outputs |= (1 << i);
+                else nodeCache[mac].outputs &= ~(1 << i);
+            }
+            const out = configs[mac]?.outputs?.[i];
+            patchLive(mac, i, state, out?.manual_mode || false, openEditors.has(`${mac}-${i}`));
+            fetch(`/api/node/${mac}/force`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ output: i, state })
+            });
+        }
+
+        async function saveLabel(mac, label) {
+            if (!configs[mac]) configs[mac] = { mac, label, outputs: [] };
+            configs[mac].label = label;
+            await postCfg(mac);
+        }
+
+        async function saveOutLabel(mac, i, label) {
+            const out = configs[mac]?.outputs?.[i];
+            if (!out) return;
+            out.label = label;
+            const span = document.getElementById(`oname-${mac}-${i}`);
+            if (span) span.textContent = label || `Salida ${i}`;
+            await postCfg(mac);
+        }
+
+        async function saveRule(mac, i) {
+            const out = configs[mac]?.outputs?.[i];
+            if (!out) return;
+
+            if (out.rule_type === R_TIMER) {
+                const dials = dialStore[`${mac}-${i}`];
+                if (dials) {
+                    out.on_ms = dials.on.getRaw() * 60000;
+                    out.off_ms = dials.off.getRaw() * 60000;
+                }
+            }
+
+            if (out.rule_type === R_REPLICATE) {
+                const src = parseInt(document.getElementById(`replsrc-${mac}-${i}`)?.value);
+                if (!isNaN(src)) out.replicate_src = src;
+            }
+
+            if (out.rule_type === R_THRESH) {
+                const sen    = document.getElementById(`tsen-on-${mac}-${i}`)?.value;
+                const onCond = document.getElementById(`tcond-on-${mac}-${i}`)?.value; // 'lt' | 'gt'
+                const onVal  = parseFloat(document.getElementById(`tval-on-${mac}-${i}`)?.value);
+                const offVal = parseFloat(document.getElementById(`tval-off-${mac}-${i}`)?.value);
+                out.use_humidity = sen === 'hum';
+                out.invert = onCond === 'gt';
+                if (onCond === 'lt') {
+                    // ENCENDER cuando < onVal, APAGAR cuando > offVal
+                    if (!isNaN(onVal))  out.lower_val = onVal;  else delete out.lower_val;
+                    if (!isNaN(offVal)) out.upper_val = offVal; else delete out.upper_val;
+                } else {
+                    // ENCENDER cuando > onVal, APAGAR cuando < offVal
+                    if (!isNaN(onVal))  out.upper_val = onVal;  else delete out.upper_val;
+                    if (!isNaN(offVal)) out.lower_val = offVal; else delete out.lower_val;
+                }
+            }
+
+            const ok = await postCfg(mac);
+
+            // Refresh the rule badge in the output row header
+            const rl = document.getElementById(`orule-${mac}-${i}`);
+            if (rl) rl.textContent = ruleLabel(out);
+
+            // Visual save feedback on the Guardar button
+            const btn = document.getElementById(`sbtn-${mac}-${i}`);
+            if (btn) {
+                btn.textContent = ok ? '✓ Guardado' : '✗ Error';
+                btn.style.background = ok ? '#15a185' : '#c0392b';
+                btn.style.color = '#fff';
+                setTimeout(() => {
+                    btn.textContent = 'Guardar';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 1500);
+            }
+        }
+
+        async function postCfg(mac) {
+            const cfg = configs[mac];
+            if (!cfg) return false;
+            try {
+                const r = await fetch(`/api/node/${mac}/config`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cfg)
+                });
+                return r.ok;
+            } catch { return false; }
+        }
+
+        async function fetchConfig(mac) {
+            try {
+                const r = await fetch(`/api/node/${mac}/config`);
+                if (r.ok) {
+                    configs[mac] = await r.json();
+                    applyConfigToUI(mac);
+                }
+            } catch { }
+        }
+
+        // ─── Settings panel ───────────────────────────────────────────────────────────
+        function toggleSettings() { document.getElementById('settingsWrap').classList.toggle('open'); }
+        function openSettings() { document.getElementById('settingsWrap').classList.add('open'); }
+
+        async function loadPresetName() {
+            try {
+                const r = await fetch('/api/config/name');
+                if (r.ok) {
+                    const d = await r.json();
+                    document.getElementById('presetNameInput').value = d.name || '';
+                }
+            } catch { }
+        }
+
+        async function savePresetName() {
+            const name = document.getElementById('presetNameInput').value.trim();
+            const btn = document.getElementById('presetSaveBtn');
+            const r = await fetch('/api/config/name', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            btn.textContent = r.ok ? '✓ Guardado' : '✗ Error';
+            btn.style.background = r.ok ? '#15a185' : '#c0392b';
+            setTimeout(() => { btn.textContent = 'Guardar'; btn.style.background = ''; }, 1500);
+        }
+
+        async function saveWifi(slot) {
+            const ssid = document.getElementById('ssid' + slot).value.trim();
+            const pass = document.getElementById('pass' + slot).value;
+            if (!ssid) { toast(slot, 'El SSID no puede estar vacío.', true); return; }
+            const r = await fetch('/api/wifi/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slot, ssid, password: pass }) });
+            toast(slot, r.ok ? 'Guardado. Conectando...' : 'Error.', !r.ok);
+            if (r.ok) setTimeout(loadWifi, 4000);
+        }
+        async function clearWifi(slot) {
+            document.getElementById('ssid' + slot).value = '';
+            document.getElementById('pass' + slot).value = '';
+            await fetch('/api/wifi/clear', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slot }) });
+            toast(slot, 'Borrado.');
+        }
+        function toast(slot, msg, err = false) {
+            const el = document.getElementById('wt' + slot);
+            el.textContent = msg; el.className = 'toast show' + (err ? ' err' : '');
+            setTimeout(() => el.className = 'toast', 3500);
+        }
+
+        // ─── Config backup / restore ──────────────────────────────────────────────────
+        async function downloadCfg() {
+            const blob = await fetch('/api/config').then(r => r.blob());
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); a.download = 'medusa-config.json'; a.click();
+        }
+        async function uploadCfg(input) {
+            const text = await input.files[0]?.text();
+            if (!text) return;
+            const r = await fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: text });
+            if (r.ok) { Object.keys(configs).forEach(k => delete configs[k]); await refresh(); }
+            input.value = '';
+        }
+
+        // ─── Formatting ───────────────────────────────────────────────────────────────
+        function fTemp(v) { return (v == null || isNaN(v)) ? '<span class="na">—°C</span>' : `<b>${(+v).toFixed(1)}°C</b>`; }
+        function fHum(v) { return (v == null || isNaN(v)) ? '<span class="na">—%RH</span>' : `<b>${(+v).toFixed(0)}%RH</b>`; }
+        function x(s) { return String(s ?? '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+        // ─── Fresh-config banner ──────────────────────────────────────────────────────
+        // Checks whether the master has any saved config. If not, prompts the user
+        // to restore a preset. Dismissed state survives the session (sessionStorage).
+        async function checkFreshConfig() {
+            if (sessionStorage.getItem('banner-dismissed')) return;
+            try {
+                const cfg = await fetch('/api/config').then(r => r.json());
+                const nodes = cfg.nodes || [];
+                const hasAnyConfig = nodes.some(n =>
+                    n.label ||
+                    n.outputs?.some(o => o.label || (o.rule_type && o.rule_type !== 0))
+                );
+                if (!hasAnyConfig)
+                    document.getElementById('presetBanner').style.display = 'flex';
+            } catch { }
+        }
+        function dismissBanner() {
+            sessionStorage.setItem('banner-dismissed', '1');
+            document.getElementById('presetBanner').style.display = 'none';
+        }
+
+        // ─── Boot ─────────────────────────────────────────────────────────────────────
+        loadWifi();
+        loadPresetName();
+        refresh();
+        checkFreshConfig();
+        setInterval(refresh, 3000);
+        setInterval(loadWifi, 10000);
+    </script>
 </body>
+
 </html>
